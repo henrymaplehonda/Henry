@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pre-Owned Chat Assistant | Henry Chen | Maple Honda</title>
-<meta name="description" content="Chat-style pre-owned vehicle assistant for Henry Chen at Maple Honda.">
+<title>Pre-Owned Vehicle Finder | Henry Chen | Maple Honda</title>
+<meta name="description" content="Tell Henry Chen what pre-owned vehicle you want and get matched with options that fit your needs, budget, and trade-in.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--red:#cc0000;--darkred:#a50000;--bg:#fff;--soft:#fafafa;--border:#ebebeb;--text:#111;--muted:#666;--light:#fff5f5}
@@ -68,7 +68,7 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
   </div>
   <div class="nav-links">
     <a href="index.html#vehicles">New</a>
-    <a href="preowned.html">Pre-owned Form</a>
+    <a href="preowned.html">Pre-owned</a>
     <a href="index.html#blog">Blog</a>
     <a href="tel:6475236878">647-523-6878</a>
   </div>
@@ -76,27 +76,28 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
 
 <div class="wrap">
   <div class="header">
-    <div class="badge">🤖 Guided intake assistant</div>
-    <h1>Pre-Owned Vehicle Chat Assistant</h1>
-    <p class="sub">A chat-style lead capture assistant that asks one question at a time and sends the full intake to your Formspree inbox.</p>
+    <div class="badge">🚗 Pre-Owned Vehicle Finder</div>
+    <h1>Tell me what you’re looking for.<br>I’ll help you find the right pre-owned vehicle.</h1>
+    <p class="sub">Answer a few quick questions and I’ll use your details to narrow down better matches for you. This is the fastest way to help me understand what you actually want.</p>
+    <p class="sub" style="font-size:14px;margin-top:12px;max-width:620px;">Phone number and email are the only must-have details. Everything else helps me narrow things down faster.</p>
   </div>
 
   <div class="grid">
     <aside class="panel">
-      <h2>What this does well</h2>
-      <p>It feels easier than a long form and collects the same core details in a more natural order.</p>
+      <h2>How this helps you</h2>
+      <p>Most pre-owned inquiries are too vague. People ask about “used cars,” but they do not say what matters most to them. That usually leads to wasted time and random suggestions.</p>
       <ul>
-        <li>Phone and email first</li>
-        <li>Vehicle preferences next</li>
-        <li>Budget and trade-in after that</li>
-        <li>Financing-related qualifiers near the end</li>
+        <li>Tell me the brand, model, year, trim, and color you prefer</li>
+        <li>Set your budget and mileage comfort zone up front</li>
+        <li>Let me know if you have a trade-in</li>
+        <li>Share financing-related details only if they matter to your situation</li>
       </ul>
-      <p class="mini">This is a guided assistant for your static website. A true live AI agent would need a backend because API keys should not be exposed in the browser. citeturn925109search1turn925109search0</p>
+      <p class="mini">The goal is simple: fewer back-and-forth messages, better vehicle suggestions, and a smoother buying experience from the start.</p>
     </aside>
 
     <section class="chat-shell">
       <div class="chat-top">
-        <div class="chat-title">Henry’s Vehicle Finder</div>
+        <div class="chat-title">Henry’s Pre-Owned Finder</div>
         <div class="chat-state" id="progressPill">Step 1</div>
       </div>
 
@@ -106,8 +107,8 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
         <h3>Quick summary before sending</h3>
         <div class="summary-list" id="summaryList"></div>
         <button class="send-btn" id="submitAllBtn" style="margin-top:14px;">Send to Henry →</button>
-        <div class="small-note">This sends the full intake to your Formspree inbox.</div>
-        <div class="success hidden" id="successMsg">Thanks — your request has been sent.</div>
+        <div class="small-note">Your answers will be sent directly to Henry so he can review your request.</div>
+        <div class="success hidden" id="successMsg">Thanks — your request has been sent. Henry will review it and get back to you.</div>
       </div>
 
       <div class="chat-input" id="inputArea">
@@ -125,22 +126,22 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
 const endpoint = "https://formspree.io/f/xvzdpbvo";
 
 const questions = [
-  { key:"phone", label:"What is the best phone number to reach you?", required:true, type:"text", placeholder:"647-555-0123", validate:v=>v.trim().length >= 10, error:"Please enter a phone number." },
+  { key:"phone", label:"What is the best phone number to reach you at?", required:true, type:"text", placeholder:"647-555-0123", validate:v=>v.trim().length >= 10, error:"Please enter a phone number." },
   { key:"email", label:"What is your email address?", required:true, type:"text", placeholder:"john@email.com", validate:v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), error:"Please enter a valid email address." },
-  { key:"brand", label:"What brand are you looking for?", type:"text", placeholder:"Honda, Toyota, BMW..." },
-  { key:"model", label:"What model are you looking for?", type:"text", placeholder:"CR-V, Civic, RAV4..." },
-  { key:"model_year", label:"What model year or year range do you want?", type:"text", placeholder:"2022 or newer" },
-  { key:"trim", label:"Which trim do you prefer?", type:"text", placeholder:"EX-L, Touring, LX..." },
-  { key:"color", label:"Any preferred color?", type:"text", placeholder:"Black, white, gray..." },
+  { key:"brand", label:"Which brand are you interested in?", type:"text", placeholder:"Honda, Toyota, BMW..." },
+  { key:"model", label:"Which model are you looking for?", type:"text", placeholder:"CR-V, Civic, RAV4..." },
+  { key:"model_year", label:"What model year or year range would you like?", type:"text", placeholder:"2022 or newer" },
+  { key:"trim", label:"Do you have a preferred trim?", type:"text", placeholder:"EX-L, Touring, LX..." },
+  { key:"color", label:"Do you have a preferred color?", type:"text", placeholder:"Black, white, gray..." },
   { key:"budget", label:"What is your budget before tax?", type:"text", placeholder:"$25,000 to $32,000" },
-  { key:"max_mileage", label:"What maximum mileage are you comfortable with?", type:"text", placeholder:"Under 60,000 km" },
-  { key:"has_trade_in", label:"Do you have a trade-in?", type:"options", options:["Yes","No","Maybe"] },
-  { key:"trade_in_details", label:"What is your trade-in?", type:"text", placeholder:"2019 Honda Civic EX, 85,000 km", condition: data => data.has_trade_in === "Yes" || data.has_trade_in === "Maybe" },
-  { key:"accident_preference", label:"How do you feel about accident history?", type:"options", options:["No accident only","Minor claim is okay","Open to either if price is right"] },
-  { key:"credit_score_range", label:"What is your estimated credit score?", type:"options", options:["800+","720–799","680–719","620–679","Below 620","Not sure"] },
-  { key:"employment_status", label:"Do you currently have a job?", type:"options", options:["Full-time","Part-time","Self-employed","Contract","Student","Currently not employed"] },
-  { key:"canada_status", label:"What is your status in Canada?", type:"options", options:["Citizen","Permanent Resident","Work Permit","Study Permit","Other / prefer to discuss"] },
-  { key:"notes", label:"Anything else I should know?", type:"text", placeholder:"Must-have features, timeline, family size, financing questions..." }
+  { key:"max_mileage", label:"What is the highest mileage you would be comfortable with?", type:"text", placeholder:"Under 60,000 km" },
+  { key:"has_trade_in", label:"Do you have a trade-in vehicle?", type:"options", options:["Yes","No","Maybe"] },
+  { key:"trade_in_details", label:"What are you trading in?", type:"text", placeholder:"2019 Honda Civic EX, 85,000 km", condition: data => data.has_trade_in === "Yes" || data.has_trade_in === "Maybe" },
+  { key:"accident_preference", label:"What is your preference on accident history?", type:"options", options:["No accident only","Minor claim is okay","Open to either if price is right"] },
+  { key:"credit_score_range", label:"If financing matters, what is your estimated credit score range?", type:"options", options:["800+","720–799","680–719","620–679","Below 620","Not sure"] },
+  { key:"employment_status", label:"Are you currently employed?", type:"options", options:["Full-time","Part-time","Self-employed","Contract","Student","Currently not employed"] },
+  { key:"canada_status", label:"If financing matters, what is your status in Canada?", type:"options", options:["Citizen","Permanent Resident","Work Permit","Study Permit","Other / prefer to discuss"] },
+  { key:"notes", label:"Anything else I should know before I start looking?", type:"text", placeholder:"Must-have features, timeline, family size, financing questions..." }
 ];
 
 const data = {};
@@ -226,7 +227,7 @@ function finishChat(){
   progressPill.textContent = 'Review';
   optionRow.classList.add('hidden');
   textInputRow.classList.add('hidden');
-  bubble('Perfect. Please review your answers below, then send them to Henry.', 'bot');
+  bubble('Perfect. Please review your answers below, then send them to Henry so he can start looking for the right options.', 'bot');
 
   summaryList.innerHTML = '';
   questions.forEach(q => {
@@ -273,8 +274,8 @@ submitAllBtn.onclick = async function(){
   }
 };
 
-bubble('Hi, I’m Henry’s vehicle finder assistant. I’ll ask a few quick questions so Henry can understand exactly what you need.', 'bot');
-bubble('Let’s start with the two most important things first.', 'bot');
+bubble('Hi — I’m here to help collect the details Henry needs so he can find better pre-owned options for you.', 'bot');
+bubble('Let’s start with the two most important things first so he can reach you when he finds a match.', 'bot');
 nextQuestion();
 </script>
 </body>
