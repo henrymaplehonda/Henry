@@ -343,6 +343,9 @@ section{padding:80px 40px}
   transition:background .18s
 }
 .car-btn:hover{background:var(--darkred)}
+.car-actions{display:flex;gap:10px}
+.car-btn-secondary{background:#fff;color:var(--red);border:1px solid var(--red);text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.car-btn-secondary:hover{background:#fff4f4}
 
 /* TESTIMONIALS */
 .testimonials{background:#fff}
@@ -764,7 +767,8 @@ const cars = [
     badge:"🏕️ Adventure",
     emoji:"🛻",
     desc:"2026 TrailSport: 360° cameras, torque-vectoring AWD, steel skid plates, full-size spare. Built for adventure.",
-    img:"https://wieck-honda-production.s3.amazonaws.com/photos/d039cde265fe5fdad225f5c65dc96b367eb609c3/preview-928x522.jpg"
+    img:"https://wieck-honda-production.s3.amazonaws.com/photos/d039cde265fe5fdad225f5c65dc96b367eb609c3/preview-928x522.jpg",
+    featuresUrl:"new-2026-honda-pilot-features.html"
   },
   {
     name:"Honda HR-V",
@@ -815,7 +819,9 @@ cars.forEach(c => {
       <div class="car-name">${c.name}</div>
       <div class="car-tag">${c.tag}</div>
       <div class="car-desc">${c.desc}</div>
-      <button class="car-btn">Book a Test Drive →</button>
+      ${c.featuresUrl
+        ? `<div class="car-actions"><button class="car-btn">Book a Test Drive →</button><a class="car-btn car-btn-secondary" href="${c.featuresUrl}" onclick="event.stopPropagation()">Features</a></div>`
+        : `<button class="car-btn">Book a Test Drive →</button>`}
     </div>`;
   grid.appendChild(d);
   const img = new Image();
