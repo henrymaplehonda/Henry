@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -106,16 +106,16 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
 
 <div class="wrap">
   <div class="header">
-    <div class="badge">🚗 Pre-Owned Vehicle Finder</div>
-    <h1>Tell me what you’re looking for.<br>I’ll help you find the right pre-owned vehicle.</h1>
-    <p class="sub">Answer a few quick questions and I’ll use your details to narrow down better matches for you. This is the fastest way to help me understand what you actually want.</p>
+    <div class="badge">ðŸš— Pre-Owned Vehicle Finder</div>
+    <h1>Tell me what you're looking for.<br>I'll help you find the right pre-owned vehicle.</h1>
+    <p class="sub">Answer a few quick questions and I'll use your details to narrow down better matches for you. This is the fastest way to help me understand what you actually want.</p>
     <p class="sub" style="font-size:14px;margin-top:12px;max-width:620px;">Phone number and email are the only must-have details. Everything else helps me narrow things down faster.</p>
   </div>
 
   <div class="grid">
     <aside class="panel">
       <h2>How this helps you</h2>
-      <p>Most pre-owned inquiries are too vague. People ask about “used cars,” but they do not say what matters most to them. That usually leads to wasted time and random suggestions.</p>
+      <p>Most pre-owned inquiries are too vague. People ask about "used cars," but they do not say what matters most to them. That usually leads to wasted time and random suggestions.</p>
       <ul>
         <li>Tell me the brand, model, year, trim, and color you prefer</li>
         <li>Set your budget and mileage comfort zone up front</li>
@@ -127,7 +127,7 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
 
     <section class="chat-shell">
       <div class="chat-top">
-        <div class="chat-title">Henry’s Pre-Owned Finder</div>
+        <div class="chat-title">Henry's Pre-Owned Finder</div>
         <div class="chat-state" id="progressPill">Step 1</div>
       </div>
 
@@ -136,9 +136,9 @@ h1{font-size:clamp(28px,5vw,46px);line-height:1.1;margin-bottom:12px}
       <div class="summary hidden" id="summaryBox">
         <h3>Quick summary before sending</h3>
         <div class="summary-list" id="summaryList"></div>
-        <button class="send-btn" id="submitAllBtn" style="margin-top:14px;">Send to Henry →</button>
+        <button class="send-btn" id="submitAllBtn" style="margin-top:14px;">Send to Henry â†’</button>
         <div class="small-note">Your answers will be sent directly to Henry so he can review your request.</div>
-        <div class="success hidden" id="successMsg">Thanks — your request has been sent. Henry will review it and get back to you.</div>
+        <div class="success hidden" id="successMsg">Thanks - your request has been sent. Henry will review it and get back to you.</div>
       </div>
 
       <div class="chat-input" id="inputArea">
@@ -168,7 +168,7 @@ const questions = [
   { key:"has_trade_in", label:"Do you have a trade-in vehicle?", type:"options", options:["Yes","No","Maybe"] },
   { key:"trade_in_details", label:"What are you trading in?", type:"text", placeholder:"2019 Honda Civic EX, 85,000 km", condition: data => data.has_trade_in === "Yes" || data.has_trade_in === "Maybe" },
   { key:"accident_preference", label:"What is your preference on accident history?", type:"options", options:["No accident only","Minor claim is okay","Open to either if price is right"] },
-  { key:"credit_score_range", label:"If financing matters, what is your estimated credit score range?", type:"options", options:["800+","720–799","680–719","620–679","Below 620","Not sure"] },
+  { key:"credit_score_range", label:"If financing matters, what is your estimated credit score range?", type:"options", options:["800+","720-799","680-719","620-679","Below 620","Not sure"] },
   { key:"employment_status", label:"Are you currently employed?", type:"options", options:["Full-time","Part-time","Self-employed","Contract","Student","Currently not employed"] },
   { key:"canada_status", label:"If financing matters, what is your status in Canada?", type:"options", options:["Citizen","Permanent Resident","Work Permit","Study Permit","Other / prefer to discuss"] },
   { key:"notes", label:"Anything else I should know before I start looking?", type:"text", placeholder:"Must-have features, timeline, family size, financing questions..." }
@@ -307,14 +307,16 @@ submitAllBtn.onclick = async function(){
     submitAllBtn.textContent = 'Sent';
   } catch (err) {
     submitAllBtn.disabled = false;
-    submitAllBtn.textContent = 'Send to Henry →';
+    submitAllBtn.textContent = 'Send to Henry â†’';
     alert('Something went wrong. Please try again or call Henry directly at 647-523-6878.');
   }
 };
 
-bubble('Hi — I’m here to help collect the details Henry needs so he can find better pre-owned options for you.', 'bot');
-bubble('Let’s start with the two most important things first so he can reach you when he finds a match.', 'bot');
+bubble('Hi - I'm here to help collect the details Henry needs so he can find better pre-owned options for you.', 'bot');
+bubble('Let's start with the two most important things first so he can reach you when he finds a match.', 'bot');
 nextQuestion();
 </script>
 </body>
 </html>
+
+
