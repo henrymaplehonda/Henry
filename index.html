@@ -510,6 +510,32 @@ section{padding:80px 40px}
   transition:border-color .18s,background .18s
 }
 .review-btn:hover{border-color:#bbb;background:#eee}
+.review-cta-row{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  margin-top:18px
+}
+.review-cta-row .review-btn{margin-top:0}
+.review-photo-link{
+  display:block;
+  width:clamp(150px,20vw,210px);
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+  transition:transform .18s,box-shadow .18s
+}
+.review-photo-link:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 28px rgba(0,0,0,.12)
+}
+.review-photo-link img{
+  width:100%;
+  height:auto;
+  aspect-ratio:4/5;
+  object-fit:cover;
+  object-position:center 38%
+}
 .testi-window{
   margin-top:32px;
   max-height:420px;
@@ -655,6 +681,8 @@ footer a{color:rgba(255,255,255,.4)}
   section{padding:56px 20px}
   .form-row{grid-template-columns:1fr}
   .form-wrap{padding:28px 20px}
+  .review-cta-row{align-items:flex-start}
+  .review-photo-link{width:min(220px,100%)}
   .nav-link-hide{display:none!important}
   .steps{grid-template-columns:repeat(2,1fr)}
   .trust-bar{flex-direction:column;align-items:center}
@@ -778,7 +806,12 @@ footer a{color:rgba(255,255,255,.4)}
     <div class="eyebrow">Happy customers</div>
     <div class="section-title">What people are saying</div>
     <p class="section-sub">Positive Google reviews mentioning Henry at Maple Honda. For the full public list, tap â€œRead Google Reviews.â€</p>
-    <a class="review-btn" href="https://www.google.com/search?q=Maple+Honda+Google+reviews" target="_blank" rel="noopener">â­ Read Google Reviews</a>
+    <div class="review-cta-row">
+      <a class="review-btn" href="https://www.google.com/search?q=Maple+Honda+Google+reviews" target="_blank" rel="noopener">â­ Read Google Reviews</a>
+      <a class="review-photo-link" href="https://www.google.com/search?q=Maple+Honda+Google+reviews" target="_blank" rel="noopener" aria-label="View Maple Honda Google reviews">
+        <img src="maple-honda-home-photo2.jpg" alt="Maple Honda exterior at the Vaughan location"/>
+      </a>
+    </div>
     <div class="testi-window">
       <div class="testi-grid">
         <div class="testi"><div class="stars">â˜…â˜…â˜…â˜…â˜…</div><blockquote>"We had a great experience purchasing a used Pilot here. Henry was great! He was very knowledgeable about the vehicle and really helped us make an informed decision. We'd happily come back next time we need a vehicle!"</blockquote><div class="testi-author">Google Review</div><div class="testi-label">Tim Lahn</div></div>
@@ -1165,4 +1198,5 @@ async function submitForm() {
 </script>
 </body>
 </html>
+
 
