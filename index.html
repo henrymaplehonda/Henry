@@ -554,6 +554,12 @@ section{padding:80px 40px}
 /* VEHICLES */
 .vehicles{background:var(--soft)}
 .car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:22px;margin-top:42px}
+.preowned-highlight{background:linear-gradient(145deg,#171513,#0f0d0b);color:#fff}
+.preowned-wrap{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:26px}
+.preowned-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.preowned-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;border:1px solid var(--red);border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700}
+.preowned-btn.sec{background:transparent;border-color:rgba(255,255,255,.38)}
+.preowned-disclaimer{margin-top:16px;color:rgba(255,255,255,.72);font-size:13px;line-height:1.7}
 .car-card{
   background:#fff;border:1px solid var(--border);border-radius:16px;
   overflow:hidden;cursor:pointer;
@@ -778,6 +784,7 @@ footer a{color:rgba(255,255,255,.4)}
   .review-rating-text{font-size:14px}
   .nav-link-hide{display:none!important}
   .steps{grid-template-columns:repeat(2,1fr)}
+  .preowned-wrap{padding:20px}
   .trust-bar{flex-direction:column;align-items:center}
   .trust-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.15);width:100%;justify-content:center;padding:10px 20px}
   .trust-item:last-child{border-bottom:none}
@@ -809,7 +816,7 @@ footer a{color:rgba(255,255,255,.4)}
 <div class="nav-links">
   <a class="nav-link-hide" href="#why">Why Henry</a>
   <a class="nav-link-hide" href="#vehicles">New</a>
-  <a class="nav-link-hide" href="preowned-vehicle-search.html" target="_blank">Pre-owned</a>
+  <a class="nav-link-hide" href="#preowned">Pre-owned</a>
   <a class="nav-link-hide" href="#dealer-sitemap-title">GTA Dealers</a>
   <a class="nav-link-hide" href="#blog">Blog</a>
   <a class="nav-phone nav-link-hide" href="tel:6475236878">&#128222; 647-523-6878</a>
@@ -892,6 +899,26 @@ footer a{color:rgba(255,255,255,.4)}
     <div class="section-title">Which Honda is right for you?</div>
     <p class="section-sub">Click any model &mdash; I'll have it ready for your test drive.</p>
     <div class="car-grid" id="car-grid"></div>
+  </div>
+</section>
+
+<!-- PRE-OWNED INVENTORY -->
+<section class="preowned-highlight" id="preowned">
+  <div class="section-inner">
+    <div class="eyebrow">Pre-owned</div>
+    <div class="section-title">Shop Maple Honda Pre-Owned Inventory</div>
+    <div class="preowned-wrap">
+      <p class="section-sub" style="color:rgba(255,255,255,.88);max-width:900px">
+        Browse current pre-owned inventory and contact Henry to confirm pricing, availability, and vehicle details before your visit.
+      </p>
+      <div class="preowned-actions">
+        <a class="preowned-btn" href="preowned-vehicle-search.html#inventory-live">View Current Inventory</a>
+        <a class="preowned-btn sec" href="preowned-vehicle-search.html">Tell Henry What You Need</a>
+      </div>
+      <p class="preowned-disclaimer">
+        Disclaimer: vehicle availability, specifications, and advertised prices may change without notice. Daily inventory information is sourced from Maple Honda, however sold, incoming, or newly listed units may not appear in real time. OMVIC notice: advertised prices are all-in pricing unless otherwise stated, plus HST and licensing only. Finance and lease offers are on approved credit (OAC). Please check with Henry for full details before purchase.
+      </p>
+    </div>
   </div>
 </section>
 
