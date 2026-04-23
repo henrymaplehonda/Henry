@@ -841,7 +841,6 @@ footer a{color:rgba(255,255,255,.4)}
     <div class="hero-btns">
       <a class="btn" href="#book">&#128197; Book a Test Drive</a>
       <a class="btn btn-outline" href="honda-buying-faq-vaughan.html">&#10067; Honda Buying FAQ</a>
-      <a class="btn btn-outline" href="tel:6475236878">&#128222; Call Henry</a>
     </div>
     <div class="hero-meta">
       <span>&#128205; 89 Auto Vaughan Dr, Maple ON</span>
@@ -1260,12 +1259,13 @@ cars.forEach(c => {
 });
 
 function showThankYou() {
+  const trigger = document.activeElement;
   const o = document.createElement('div');
   o.className = 'modal-overlay';
   o.innerHTML = `
-    <div class="modal-box">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-heading" tabindex="-1">
       <div style="font-size:50px;margin-bottom:14px">&#127881;</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin-bottom:10px">Thank You for Booking!</h2>
+      <h2 id="modal-heading" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin-bottom:10px">Thank You for Booking!</h2>
       <p style="font-size:15px;color:var(--red);font-weight:700;margin-bottom:20px">Henry will be in touch within a few hours to confirm.</p>
       <div style="background:var(--soft);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:left;margin-bottom:22px">
         <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">&#128203; Before you come in:</p>
@@ -1279,10 +1279,31 @@ function showThankYou() {
         <a href="tel:6475236878" style="background:var(--red);color:#fff;padding:11px 20px;border-radius:8px;font-weight:600;font-size:14px">&#128222; 647-523-6878</a>
         <a href="mailto:henry@maplehonda.com" style="background:var(--soft);color:var(--text);padding:11px 20px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--border)">&#9993;&#65039; Email Henry</a>
       </div>
-      <button onclick="this.closest('.modal-overlay').remove()" style="margin-top:18px;background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
+      <button id="modal-close" aria-label="Close dialog" style="margin-top:18px;background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
     </div>`;
   document.body.appendChild(o);
-  o.addEventListener('click', e => { if(e.target===o) o.remove(); });
+
+  const box = o.querySelector('.modal-box');
+  const focusable = 'a[href], button:not([disabled])';
+
+  box.focus();
+
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    const els = [...box.querySelectorAll(focusable)];
+    const first = els[0], last = els[els.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  function close() {
+    o.remove();
+    if (trigger) trigger.focus();
+  }
+
+  o.querySelector('#modal-close').addEventListener('click', close);
+  o.addEventListener('click', e => { if (e.target === o) close(); });
 }
 
 function selectCar(m) {

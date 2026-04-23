@@ -153,27 +153,27 @@ textarea{min-height:120px;resize:vertical}
 
     <section class="section">
       <div class="field">
-        <label>Accident / insurance history tolerance</label>
+        <label id="accident_label">Accident / insurance history tolerance</label>
       </div>
-      <div class="chips" data-name="accident_tolerance">
-        <button type="button" class="chip active">No accidents only</button>
-        <button type="button" class="chip">Minor claim OK</button>
-        <button type="button" class="chip">Don't care</button>
+      <div class="chips" role="radiogroup" aria-labelledby="accident_label" data-name="accident_tolerance">
+        <button type="button" class="chip active" role="radio" aria-checked="true">No accidents only</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Minor claim OK</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Don't care</button>
       </div>
       <input type="hidden" name="accident_tolerance" id="accident_tolerance" value="No accidents only">
     </section>
 
     <section class="section">
       <div class="field">
-        <label>Purchasing timeline</label>
+        <label id="timeline_label">Purchasing timeline</label>
       </div>
-      <div class="chips" data-name="purchase_timeline">
-        <button type="button" class="chip active">ASAP</button>
-        <button type="button" class="chip">Within 1 week</button>
-        <button type="button" class="chip">Within 2 weeks</button>
-        <button type="button" class="chip">Within 1 month</button>
-        <button type="button" class="chip">1–3 months</button>
-        <button type="button" class="chip">Just looking</button>
+      <div class="chips" role="radiogroup" aria-labelledby="timeline_label" data-name="purchase_timeline">
+        <button type="button" class="chip active" role="radio" aria-checked="true">ASAP</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Within 1 week</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Within 2 weeks</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Within 1 month</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">1–3 months</button>
+        <button type="button" class="chip" role="radio" aria-checked="false">Just looking</button>
       </div>
       <input type="hidden" name="purchase_timeline" id="purchase_timeline" value="ASAP">
     </section>
@@ -203,8 +203,12 @@ function initChips() {
 
     group.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        group.querySelectorAll('.chip').forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-checked', 'false');
+        });
         chip.classList.add('active');
+        chip.setAttribute('aria-checked', 'true');
         hiddenInput.value = chip.textContent.trim();
       });
     });
@@ -258,8 +262,10 @@ clearBtn.addEventListener('click', () => {
 
     document.querySelectorAll('.chips').forEach(group => {
       const chips = group.querySelectorAll('.chip');
-      chips.forEach(chip => chip.classList.remove('active'));
-      if (chips[0]) chips[0].classList.add('active');
+      chips.forEach((chip, i) => {
+        chip.classList.toggle('active', i === 0);
+        chip.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+      });
     });
 
     statusMsg.style.display = 'none';
