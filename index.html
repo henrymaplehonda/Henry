@@ -555,7 +555,18 @@ section{padding:80px 40px}
 .vehicles{background:var(--soft)}
 .car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:22px;margin-top:42px}
 .preowned-highlight{background:linear-gradient(145deg,#171513,#0f0d0b);color:#fff}
-.preowned-highlight .section-title{color:#fff}
+.preowned-highlight .eyebrow{color:#ffb3b3}
+.preowned-highlight .eyebrow::before{background:#ff8d8d}
+.preowned-title{
+  display:inline-block;
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:14px;
+  padding:12px 18px;
+  text-shadow:0 2px 16px rgba(0,0,0,.45);
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
 .preowned-wrap{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:26px}
 .preowned-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
 .preowned-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;border:1px solid var(--red);border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700}
@@ -906,7 +917,7 @@ footer a{color:rgba(255,255,255,.4)}
 <section class="preowned-highlight" id="preowned">
   <div class="section-inner">
     <div class="eyebrow">Pre-owned</div>
-    <div class="section-title">Shop Maple Honda Pre-Owned Inventory</div>
+    <div class="section-title preowned-title">Shop Maple Honda Pre-Owned Inventory</div>
     <div class="preowned-wrap">
       <p class="section-sub" style="color:rgba(255,255,255,.88);max-width:900px">
         Browse current pre-owned inventory and contact Henry to confirm pricing, availability, and vehicle details before your visit.
