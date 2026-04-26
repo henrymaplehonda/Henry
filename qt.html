@@ -583,6 +583,7 @@ const ca$c  = n  => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 //  STATE
 // ═══════════════════════════════════════════════════════════════════════
 let cur = null, ov = {}, panelOpen = false;
+let feeOv = {};
 let downPayment = 0;
 let gapAmt = 2500;
 let optColor = false, optWheelLock = false, optLeaseGuard = false;
