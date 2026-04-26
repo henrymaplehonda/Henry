@@ -453,8 +453,7 @@ const M = [
 // HR044/HL042: 5.79% Finance flat · 5.69% Lease flat · $1,000 Finance + $1,000 Lease
 {id:'pp-ts', cat:'Passport', name:'Passport', trim:'TrailSport',
  msrp:56981, price:60126, otd:67942, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.38}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.40}, fr:{60:5.79,84:5.79}},
 
 {id:'pp-tb', cat:'Passport', name:'Passport', trim:'TrailSport Blackout',
  msrp:58181, price:61326, otd:69298, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
@@ -642,12 +641,16 @@ function kmResAdj(price, km) {
 
 // Fee breakdown helper
 function getFees(m) {
+  const o = feeOv[m.id] || {};
   const isSedan = ['Civic Sedan','Civic Hatchback','Accord','Prelude'].includes(m.cat);
   const isSi    = m.id === 'cs-si';
-  const fpdi    = (isSedan || isSi) ? 1830 : 2000;
+  const fpdi    = o.fpdi ?? ((isSedan || isSi) ? 1830 : 2000);
   const isHybridOrEV = m.engine.includes('Hybrid') || m.engine.includes('Electric');
-  const tire    = (!isSedan && !isSi && !isHybridOrEV) ? 22 : 18;
-  const ac = 100, omvic = 22, env = 1, dealer = 1000;
+  const tire    = o.tire ?? ((!isSedan && !isSi && !isHybridOrEV) ? 22 : 18);
+  const ac = o.ac ?? 100;
+  const omvic = o.omvic ?? 22;
+  const env = o.env ?? 1;
+  const dealer = o.dealer ?? 1000;
   const total = fpdi + ac + omvic + env + tire + dealer;
   return { fpdi, ac, omvic, env, tire, dealer, total };
 }
@@ -1191,7 +1194,8 @@ function leaseCard(label, months, monthly, biw, resVal, resPct, rate, promo, is3
 function finCard(label, months, rate, monthly, biw, monthlyG, biwG, monthlyGP, biwGP, protAmt, m2) {
   const wOpen = finWarrantyOpen[months] || false;
   const wCost = warrantySelected ? warrantySelected.cost : 0;
-  const cap2 = cur ? R(cur).price - downPayment : 0;
+  const taxMult = 1 + taxRate / 100;
+  const cap2 = cur ? Math.max(0, R(cur).price - incentiveTotal(cur) - downPayment - (feeUpfront ? getFees(cur).total : 0) - (tradeInVal-tradeInOwing)/taxMult - leaseEquity/taxMult) : 0;
   return `
     <div class="pcard">
       <div class="pc-hdr">
