@@ -3,12 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<script>
-// Auth guard — redirect to gate if not authenticated this session
-if(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('mh_qt_auth') !== '1'){
-  window.location.replace('quote.html');
-}
-</script>
+<script>if(typeof sessionStorage!=='undefined'&&sessionStorage.getItem('mh_qt_auth')!=='1'){window.location.replace('quote.html');}</script>
 <title>Honda Quick Quote — Maple Honda</title>
 <style>
 :root {
@@ -32,7 +27,7 @@ if(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('mh_qt_auth')
   --purple:   #a87cf5;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.45;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:16.5px;line-height:1.45;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
 
@@ -300,267 +295,208 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.45
 const DATA_DATE = 'April 25, 2026';
 
 const M = [
-// ═══════════════════════════════════════════════════════════════════════
-//  ALL RATES from April 2026 Honda Programs (NAS081-26) Apr 1–30, 2026
-//  Finance cols 24/36/48/60/72/84 — app uses 60 & 84
-//  Lease cols 24/30/36/42/48/54/60 — app uses 36 & 60
-//  Selling prices: Maple Honda internal sheet, April 25, 2026
-// ═══════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
+//  April 2026 Honda Programs · Prices: Maple Honda internal Apr 25 2026
+//  Residuals: Official Honda Canada 2026 Residual Values sheet
+//  Residual basis: % of MSRP · KM basis: 24,000 km/yr
+//  km adjustment: ±2% of MSRP per 4,000 km/yr from 24k base
+// ══════════════════════════════════════════════════════════════════════════
 
-// ── CIVIC SEDAN (4D) ─────────────────────────────────────────────────
-// HR035/HL035: Finance 2.99/3.49/3.99/4.49/4.49/4.99 · Lease 2.49/2.99/3.49/3.49/3.99/3.99/4.49
-// LX: no incentive · Sport: $500 Finance + $500 Lease
+// ── CIVIC SEDAN (4D) ──────────────────────────────────────────────────────
 {id:'cs-lx', cat:'Civic Sedan', name:'Civic Sedan', trim:'LX',
  msrp:28340, price:31306, otd:35376, engine:'2.0L 150hp / CVT', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.56,60:.41}, fr:{60:4.49,84:4.99},
- promo:{rate:4.49,term:60,exp:'Apr 30'}},
+ lr:{36:3.49,60:4.49}, rv:{36:.58,60:.40}, fr:{60:4.49,84:4.99}},
 
 {id:'cs-sp', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport',
- msrp:32200, price:35166, otd:39738, engine:'2.0L 150hp / CVT', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.55,60:.41}, fr:{60:4.49,84:4.99},
- promo:{rate:4.49,term:60,exp:'Apr 30'},
- inc:['00 Finance Bonus','00 Lease Bonus']},
+ msrp:32200, price:35175, otd:39748, engine:'2.0L 150hp / CVT', drive:'FWD',
+ lr:{36:3.49,60:4.49}, rv:{36:.55,60:.37}, fr:{60:4.49,84:4.99},
+ // Confirmed residuals honda.ca Apr 26 2026 (60mo, 4.49%, cap $34,675.50 after $500 Lease Bonus):
+ resKm:{20000:13562, 24000:12880, 32000:9680, 40000:6480}},
 
-// HR036/HL036: same rates · $500 Finance only
+// rv60=43% of MSRP @ 24k confirmed: $34,100×43%=$14,663 ✓ honda.ca Apr 25
+// rv60=45% of MSRP @ 20k confirmed: $34,100×45%=$15,345 ✓ honda.ca Apr 25
 {id:'cs-sh', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport Hybrid',
  msrp:34100, price:37071, otd:41879, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.56,60:.412}, fr:{60:4.49,84:4.99},
- resKm:{ 12000:16027, 16000:15686, 20000:15345, 24000:14663, 40000:8263 },
- resConfirmed:{60:15345},
- promo:{rate:4.49,term:60,exp:'Apr 30'},
- inc:['00 Finance Bonus']},
+ lr:{36:3.49,60:4.49}, rv:{36:.61,60:.43}, fr:{60:4.49,84:4.99},
+ resKm:{12000:.47,16000:.45,20000:.45,24000:.43,40000:.35}},
 
 {id:'cs-sth', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport Touring Hybrid',
  msrp:37600, price:40561, otd:45834, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.56,60:.41}, fr:{60:4.49,84:4.99},
- promo:{rate:4.49,term:60,exp:'Apr 30'},
- inc:['00 Finance Bonus']},
+ lr:{36:3.49,60:4.49}, rv:{36:.61,60:.43}, fr:{60:4.49,84:4.99}},
 
-// Si (SSH01): STD rates only
 {id:'cs-si', cat:'Civic Sedan', name:'Civic Sedan', trim:'Si',
  msrp:36600, price:39566, otd:44710, engine:'1.5T 200hp / 6-MT', drive:'FWD',
- lr:{36:null,60:null}, rv:{36:.54,60:null}, fr:{60:6.99,84:6.99}},
+ lr:{36:null,60:null}, rv:{36:.58,60:.39}, fr:{60:6.99,84:6.99}},
 
-// ── CIVIC HATCHBACK (5D) ──────────────────────────────────────────────
-// HR037/HL037 Sport: Finance 3.49/3.99/4.49/4.99/4.99/5.49 · Lease 2.99/3.49/3.99/3.99/4.49/4.49/4.99
-// $500 Finance + $500 Lease
+// ── CIVIC HATCHBACK (5D) ──────────────────────────────────────────────────
 {id:'ch-sp', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport',
  msrp:32195, price:35166, otd:39738, engine:'2.0L 150hp / CVT', drive:'FWD',
- lr:{36:3.99,60:4.99}, rv:{36:.55,60:.41}, fr:{60:4.99,84:5.49},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:['00 Finance Bonus','00 Lease Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.58,60:.40}, fr:{60:4.99,84:5.49}},
 
-// HR038/HL038 Hybrid: Finance 3.99/4.49/4.99/5.49/5.49/5.99 · Lease 3.49/3.99/4.49/4.49/4.99/4.99/5.49
 {id:'ch-sh', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport Hybrid',
  msrp:35991, price:38962, otd:44027, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
- lr:{36:4.49,60:5.49}, rv:{36:.56,60:.41}, fr:{60:5.49,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}},
+ lr:{36:4.49,60:5.49}, rv:{36:.61,60:.43}, fr:{60:5.49,84:5.99}},
 
 {id:'ch-sth', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport Touring Hybrid',
  msrp:39491, price:42462, otd:47982, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
- lr:{36:4.49,60:5.49}, rv:{36:.55,60:.41}, fr:{60:5.49,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}},
+ lr:{36:4.49,60:5.49}, rv:{36:.61,60:.43}, fr:{60:5.49,84:5.99}},
 
-// ── PRELUDE (3D) ─────────────────────────────────────────────────────
-// SSH01/SH001: SPL STD — special rates, not published in promo sheet
+// ── PRELUDE ───────────────────────────────────────────────────────────────
 {id:'pre', cat:'Prelude', name:'Prelude', trim:'Hybrid',
  msrp:49990, price:52961, otd:59846, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
- lr:{36:null,60:null}, rv:{36:.56,60:null}, fr:{60:null,84:null}},
+ lr:{36:null,60:null}, rv:{36:.62,60:.44}, fr:{60:null,84:null}},
 
-// ── ACCORD ───────────────────────────────────────────────────────────
-// HR048 Finance: 3.49/3.99/4.49/4.99/5.99/5.99 (60mo=4.99%, 84mo=5.99%)
-// HL041 SE/Sport-L: Lease 2.99/3.49/3.99/4.49/4.49/4.99/4.99 (36=3.99%, 60=4.99%)
-// HL046 Touring Hybrid: Lease 2.49/2.99/3.49/3.99/3.99/4.49/4.49 (36=3.49%, 60=4.49%)
+// ── ACCORD ───────────────────────────────────────────────────────────────
 {id:'ac-se', cat:'Accord', name:'Accord', trim:'SE',
  msrp:38500, price:41475, otd:46867, engine:'1.5T 192hp / CVT', drive:'FWD',
- lr:{36:3.99,60:4.99}, rv:{36:.53,60:.39}, fr:{60:4.99,84:5.99},
- promo:{rate:4.99,term:60,exp:'Apr 30'}},
+ lr:{36:3.99,60:4.99}, rv:{36:.56,60:.39}, fr:{60:4.99,84:5.99}},
 
 {id:'ac-sl', cat:'Accord', name:'Accord', trim:'Sport-L Hybrid',
  msrp:43700, price:46671, otd:52738, engine:'2.0L Hybrid 204hp / e-CVT', drive:'FWD',
- lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:4.99,84:5.99},
- promo:{rate:4.99,term:60,exp:'Apr 30'}},
+ lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:3.99,84:4.49}},
 
 {id:'ac-tr', cat:'Accord', name:'Accord', trim:'Touring Hybrid',
  msrp:46200, price:49171, otd:55563, engine:'2.0L Hybrid 204hp / e-CVT', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.53,60:.39}, fr:{60:4.99,84:5.99},
- promo:{rate:4.49,term:60,exp:'Apr 30'}},
+ lr:{36:3.49,60:4.49}, rv:{36:.53,60:.39}, fr:{60:3.99,84:4.49}},
 
-// ── HR-V ─────────────────────────────────────────────────────────────
-// HR030 Finance: 3.99/4.99/5.49/5.99/5.99/5.99 (60=5.99%, 84=5.99%)
-// HL039 Lease: 3.49/3.99/4.99/4.99/5.49/5.49/5.49 (36=4.99%, 60=5.49%)
-// $500 Lease Bonus only
+// ── HR-V ─────────────────────────────────────────────────────────────────
 {id:'hv-lf', cat:'HR-V', name:'HR-V', trim:'LX FWD',
  msrp:30465, price:33436, otd:37783, engine:'2.0L 158hp / CVT', drive:'FWD',
- lr:{36:4.99,60:5.49}, rv:{36:.54,60:.40}, fr:{60:5.99,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}, inc:['00 Lease Bonus']},
+ lr:{36:4.49,60:5.49}, rv:{36:.59,60:.42}, fr:{60:5.99,84:5.99}},
 
 {id:'hv-la', cat:'HR-V', name:'HR-V', trim:'LX AWD',
  msrp:32591, price:35736, otd:40382, engine:'2.0L 158hp / CVT', drive:'AWD',
- lr:{36:4.99,60:5.49}, rv:{36:.54,60:.40}, fr:{60:5.99,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}, inc:['00 Lease Bonus']},
+ lr:{36:4.49,60:5.49}, rv:{36:.58,60:.41}, fr:{60:5.99,84:5.99}},
 
 {id:'hv-sp', cat:'HR-V', name:'HR-V', trim:'Sport AWD',
  msrp:35891, price:39036, otd:44111, engine:'2.0L 158hp / CVT', drive:'AWD',
- lr:{36:4.99,60:5.49}, rv:{36:.53,60:.39}, fr:{60:5.99,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}, inc:['00 Lease Bonus']},
+ lr:{36:4.49,60:5.49}, rv:{36:.57,60:.39}, fr:{60:5.99,84:5.99}},
 
 {id:'hv-el', cat:'HR-V', name:'HR-V', trim:'EX-L AWD',
  msrp:38691, price:41836, otd:47275, engine:'2.0L 158hp / CVT', drive:'AWD',
- lr:{36:4.99,60:5.49}, rv:{36:.52,60:.38}, fr:{60:5.99,84:5.99},
- promo:{rate:5.49,term:60,exp:'Apr 30'}, inc:['00 Lease Bonus']},
+ lr:{36:4.49,60:5.49}, rv:{36:.56,60:.38}, fr:{60:5.99,84:5.99}},
 
-// ── CR-V ─────────────────────────────────────────────────────────────
-// HR031 Finance: 2.99/4.19/4.69/5.19/5.19/5.19 (60=5.19%, 84=5.19%)
-// HL031 Lease: 2.99/3.49/3.99/4.49/4.49/4.99/4.99 (36=3.99%, 60=4.99%)
-// LX: no incentive · Sport: $500 Finance only
-// Sport Hybrid & above: $1,000 Lease + $500 Finance
+// ── CR-V ─────────────────────────────────────────────────────────────────
 {id:'cv-lf', cat:'CR-V', name:'CR-V', trim:'LX 2WD',
  msrp:36966, price:40111, otd:45325, engine:'1.5T 190hp / CVT', drive:'FWD',
- lr:{36:3.99,60:4.99}, rv:{36:.55,60:.41}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'}},
+ lr:{36:3.99,60:4.99}, rv:{36:.58,60:.41}, fr:{60:5.19,84:5.19}},
 
 {id:'cv-la', cat:'CR-V', name:'CR-V', trim:'LX AWD',
  msrp:39766, price:42911, otd:48489, engine:'1.5T 190hp / CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.55,60:.41}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'}},
+ lr:{36:3.99,60:4.99}, rv:{36:.58,60:.41}, fr:{60:5.19,84:5.19}},
 
 {id:'cv-sp', cat:'CR-V', name:'CR-V', trim:'Sport AWD',
  msrp:43366, price:46511, otd:52557, engine:'1.5T 190hp / CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:['00 Finance Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.58,60:.41}, fr:{60:5.19,84:5.19}},
 
+// CR-V Sport Hybrid 60mo confirmed: $49,032(sell) vs $45,887(MSRP)×43%=$19,731
+// honda.ca Apr 25: residual $20,655 → $20,655/$45,887=45% of MSRP at 20k
 {id:'cv-sh', cat:'CR-V', name:'CR-V', trim:'Sport Hybrid AWD',
  msrp:45887, price:49032, otd:55406, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.55,60:.41}, fr:{60:5.19,84:5.19},
- resConfirmed:{60:20655},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:[',000 Lease Bonus','00 Finance Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.60,60:.43}, fr:{60:5.19,84:5.19},
+ resKm:{12000:.47,16000:.46,20000:.45,24000:.43,40000:.35}},
 
 {id:'cv-ts', cat:'CR-V', name:'CR-V', trim:'TrailSport Hybrid AWD',
  msrp:47287, price:50432, otd:56988, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.55,60:.41}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:[',000 Lease Bonus','00 Finance Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.60,60:.43}, fr:{60:5.19,84:5.19}},
 
 {id:'cv-ex', cat:'CR-V', name:'CR-V', trim:'EX-L Hybrid AWD',
  msrp:48687, price:51832, otd:58570, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:[',000 Lease Bonus','00 Finance Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.60,60:.43}, fr:{60:5.19,84:5.19}},
 
 {id:'cv-th', cat:'CR-V', name:'CR-V', trim:'Touring Hybrid AWD',
  msrp:51187, price:54332, otd:61395, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
- lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:5.19,84:5.19},
- promo:{rate:4.99,term:60,exp:'Apr 30'},
- inc:[',000 Lease Bonus','00 Finance Bonus']},
+ lr:{36:3.99,60:4.99}, rv:{36:.60,60:.43}, fr:{60:5.19,84:5.19}},
 
-// ── PASSPORT ─────────────────────────────────────────────────────────
-// HR044/HL042: 5.79% Finance flat · 5.69% Lease flat · $1,000 Finance + $1,000 Lease
+// ── PASSPORT ─────────────────────────────────────────────────────────────
+// Confirmed km grid (% of MSRP $56,990): 12k=44%($25,076) 20k=42%($23,936) 24k=40%($22,796)
 {id:'pp-ts', cat:'Passport', name:'Passport', trim:'TrailSport',
- msrp:56981, price:60126, otd:67942, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.38}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ msrp:56990, price:60126, otd:67942, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.40},
+ resKm:{12000:.44,16000:.43,20000:.42,24000:.40,40000:.33},
+ fr:{60:5.79,84:5.79}},
 
 {id:'pp-tb', cat:'Passport', name:'Passport', trim:'TrailSport Blackout',
  msrp:58181, price:61326, otd:69298, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.38}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.40},
+ resKm:{12000:.44,16000:.43,20000:.42,24000:.40,40000:.33},
+ fr:{60:5.79,84:5.79}},
 
 {id:'pp-tr', cat:'Passport', name:'Passport', trim:'Touring',
  msrp:60531, price:63676, otd:71954, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.50,60:.37}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.40},
+ resKm:{12000:.44,16000:.43,20000:.42,24000:.40,40000:.33},
+ fr:{60:5.79,84:5.79}},
 
 {id:'pp-trb', cat:'Passport', name:'Passport', trim:'Touring Blackout',
  msrp:61731, price:64876, otd:73310, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.50,60:.36}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.40},
+ resKm:{12000:.44,16000:.43,20000:.42,24000:.40,40000:.33},
+ fr:{60:5.79,84:5.79}},
 
-// ── PILOT ─────────────────────────────────────────────────────────────
-// HR046/HL044: 5.79% Finance flat · 5.69% Lease flat · $1,000 both
+// ── PILOT ─────────────────────────────────────────────────────────────────
 {id:'pl-sp', cat:'Pilot', name:'Pilot', trim:'Sport',
  msrp:55550, price:58695, otd:66325, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.52,60:.38}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.58,60:.42}, fr:{60:5.79,84:5.79}},
 
 {id:'pl-el', cat:'Pilot', name:'Pilot', trim:'EX-L',
  msrp:58150, price:61295, otd:69263, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.37}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.58,60:.42}, fr:{60:5.79,84:5.79}},
 
 {id:'pl-ts', cat:'Pilot', name:'Pilot', trim:'TrailSport',
  msrp:61650, price:64795, otd:73218, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.37}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.58,60:.42}, fr:{60:5.79,84:5.79}},
 
 {id:'pl-tr', cat:'Pilot', name:'Pilot', trim:'Touring',
  msrp:64900, price:68045, otd:76891, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.50,60:.36}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.58,60:.42}, fr:{60:5.79,84:5.79}},
 
 {id:'pl-be', cat:'Pilot', name:'Pilot', trim:'Black Edition',
  msrp:66400, price:69545, otd:78586, engine:'3.5L V6 285hp / 10AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.49,60:.35}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.58,60:.42}, fr:{60:5.79,84:5.79}},
 
-// ── ODYSSEY ───────────────────────────────────────────────────────────
-// HR045/HL043: 5.79% Finance flat · 5.69% Lease flat · $1,000 both
+// ── ODYSSEY ───────────────────────────────────────────────────────────────
 {id:'od-sp', cat:'Odyssey', name:'Odyssey', trim:'Sport',
  msrp:51411, price:54556, otd:61648, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
- lr:{36:5.69,60:5.69}, rv:{36:.49,60:.35}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.39}, fr:{60:5.79,84:5.79}},
 
 {id:'od-sl', cat:'Odyssey', name:'Odyssey', trim:'Sport-L',
  msrp:54411, price:57556, otd:65038, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
- lr:{36:5.69,60:5.69}, rv:{36:.48,60:.34}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.39}, fr:{60:5.79,84:5.79}},
 
 {id:'od-tr', cat:'Odyssey', name:'Odyssey', trim:'Touring',
  msrp:59811, price:62956, otd:71140, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
- lr:{36:5.69,60:5.69}, rv:{36:.48,60:.34}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.39}, fr:{60:5.79,84:5.79}},
 
 {id:'od-be', cat:'Odyssey', name:'Odyssey', trim:'Black Edition',
  msrp:61611, price:64756, otd:73174, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
- lr:{36:5.69,60:5.69}, rv:{36:.47,60:.33}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.56,60:.39}, fr:{60:5.79,84:5.79}},
 
-// ── RIDGELINE ─────────────────────────────────────────────────────────
-// HR047/HL045: 5.79% Finance flat · 5.69% Lease flat · $1,000 both
+// ── RIDGELINE ─────────────────────────────────────────────────────────────
 {id:'rl-sp', cat:'Ridgeline', name:'Ridgeline', trim:'Sport',
  msrp:52900, price:56135, otd:63433, engine:'3.5L V6 280hp / 9AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.51,60:.37}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.59,60:.45}, fr:{60:5.79,84:5.79}},
 
 {id:'rl-ts', cat:'Ridgeline', name:'Ridgeline', trim:'TrailSport',
  msrp:56490, price:59635, otd:67388, engine:'3.5L V6 280hp / 9AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.50,60:.36}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.59,60:.45}, fr:{60:5.79,84:5.79}},
 
 {id:'rl-be', cat:'Ridgeline', name:'Ridgeline', trim:'Black Edition',
  msrp:58990, price:62135, otd:70213, engine:'3.5L V6 280hp / 9AT', drive:'i-VTM4 AWD',
- lr:{36:5.69,60:5.69}, rv:{36:.49,60:.35}, fr:{60:5.79,84:5.79},
- inc:[',000 Finance Bonus',',000 Lease Bonus']},
+ lr:{36:5.69,60:5.69}, rv:{36:.59,60:.45}, fr:{60:5.79,84:5.79}},
 
-// ── PROLOGUE (EV) ─────────────────────────────────────────────────────
-// HR039: 1.99% Finance flat ALL terms · $6,000 Finance CID
-// No promo lease rate (STD) · $5,000 Lease CID
+// ── PROLOGUE (EV) ─────────────────────────────────────────────────────────
 {id:'pr-ex', cat:'Prologue', name:'Prologue', trim:'EX',
  msrp:54990, price:58131, otd:66338, engine:'Electric / Single Motor', drive:'FWD',
- lr:{36:null,60:null}, rv:{36:.54,60:null}, fr:{60:1.99,84:1.99},
- inc:['$6,000 Finance Bonus','$5,000 Lease Bonus']},
+ lr:{36:null,60:null}, rv:{36:.49,60:.31}, fr:{60:1.99,84:1.99}},
 
 {id:'pr-el', cat:'Prologue', name:'Prologue', trim:'EX-L',
  msrp:59990, price:63131, otd:71988, engine:'Electric / Dual Motor', drive:'AWD',
- lr:{36:null,60:null}, rv:{36:.53,60:null}, fr:{60:1.99,84:1.99},
- inc:['$6,000 Finance Bonus','$5,000 Lease Bonus']},
+ lr:{36:null,60:null}, rv:{36:.47,60:.30}, fr:{60:1.99,84:1.99}},
 
 {id:'pr-tr', cat:'Prologue', name:'Prologue', trim:'Touring',
  msrp:64990, price:68131, otd:77638, engine:'Electric / Dual Motor', drive:'AWD',
- lr:{36:null,60:null}, rv:{36:.52,60:null}, fr:{60:1.99,84:1.99},
- inc:['$6,000 Finance Bonus','$5,000 Lease Bonus']},
+ lr:{36:null,60:null}, rv:{36:.45,60:.29}, fr:{60:1.99,84:1.99}},
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -595,17 +531,18 @@ let optColor = false, optWheelLock = false, optLeaseGuard = false;
 let resOv = {};   // Per-model HFS residual overrides
 let incOv = {};   // Per-model incentive overrides { modelId: number }
 let priceOv = {}; // Per-model selling price override { modelId: number }
+let msrpOv = {};  // Per-model MSRP override
+let feesOv = {};  // Per-model fees total override
 
 function getIncAmt(m) {
+  // No default incentives — user enters manually via incOv
   if (incOv[m.id] != null) return incOv[m.id];
-  if (!m.inc || !m.inc.length) return 0;
-  return m.inc.reduce((s,i) => s + (parseFloat(i.match(/\$([\d,]+)/)?.[1]?.replace(',','')) || 0), 0);
+  return 0;
 }
 
 function getPriceOverride(m) {
-  // selling price = msrp + fees - incentives, but user can override
   if (priceOv[m.id] != null) return priceOv[m.id];
-  return m.price - (getIncAmt(m) - (m.inc ? m.inc.reduce((s,i)=>s+(parseFloat(i.match(/\$([\d,]+)/)?.[1]?.replace(',',''))||0),0) : 0));
+  return m.price; // use original price from data (no incentive deduction by default)
 }
 
 function resetAll() {
@@ -624,10 +561,14 @@ function resetAll() {
   breakdownOpen = false;
   panelOpen = false;
   finWarrantyOpen = {};
+  leaseWarrantyOpen = {};
+  moreOptionsOpen = false;
   if (cur) {
     delete resOv[cur.id];
     delete incOv[cur.id];
     delete priceOv[cur.id];
+    delete msrpOv[cur.id];
+    delete feesOv[cur.id];
     delete ov[cur.id];
   }
   render();
@@ -647,44 +588,32 @@ function getRes(m, term) {
   const pct = term === 36 ? r.rv36 : r.rv60;
   const override = resOv[m.id]?.[term];
 
-  // Manual HFS override always wins
+  // Manual dollar override always wins
   if (override != null) {
-    return { val: override, pct: override / r.price, confirmed: true, src: 'Manual entry' };
+    return { val: override, pct: override / m.msrp, confirmed: true, src: 'Manual entry' };
   }
 
-  // Use per-model confirmed km residual table (60mo only for now)
-  if (term === 60 && m.resKm) {
-    const kmKey = kmAllowance > 24000 ? 40000 : kmAllowance; // snap to 40k if >24k
-    const val = m.resKm[kmKey] ?? m.resKm[20000] + kmResAdj(r.price, kmAllowance);
-    const isExact = !!m.resKm[kmKey];
-    return { val, pct: val / r.price, confirmed: isExact, src: isExact ? `honda.ca ${kmAllowance/1000}k confirmed` : 'honda.ca base + adj' };
+  // Use per-model confirmed km residual % table
+  if (m.resKm) {
+    const kmKey = kmAllowance >= 40000 ? 40000 : kmAllowance <= 12000 ? 12000 :
+                  kmAllowance <= 16000 ? 16000 : kmAllowance <= 20000 ? 20000 : 24000;
+    const resPct = m.resKm[kmKey] ?? pct;
+    const resVal = m.msrp * resPct;
+    const isExact = m.resKm[kmKey] !== undefined;
+    return { val: resVal, pct: resPct, confirmed: isExact, src: isExact ? `Honda Canada ${kmAllowance/1000}k km (confirmed)` : 'Estimate' };
   }
 
-  // Fallback: use confirmed 20k base + km adjustment
-  if (m.resConfirmed?.[term]) {
-    const adj = m.resConfirmed[term] + kmResAdj(r.price, kmAllowance);
-    const isBase = kmAllowance === 20000;
-    return { val: adj, pct: adj / r.price, confirmed: isBase, src: isBase ? 'honda.ca confirmed' : `honda.ca 20k + km adj` };
-  }
-
-  const base = r.price * pct + kmResAdj(r.price, kmAllowance);
-  return { val: base, pct: base / r.price, confirmed: false, src: 'Estimate' };
+  // Standard: MSRP × published % + km adjustment
+  const adjPct = pct + kmResAdjPct(kmAllowance);
+  const val = m.msrp * Math.max(0, adjPct);
+  return { val, pct: adjPct, confirmed: false, src: 'Honda Canada (est. km adj)' };
 }
 
-// KM residual adjustment vs 20k standard
-// Confirmed from honda.ca: Civic Sport Hybrid 20k→24k = -$682 per 4k band
-// Below 20k: mirror (+$682 per 4k fewer km, estimated)
-// Above 24k: extra km prepaid at $0.08/km × lease term years
-function kmResAdj(price, km) {
-  if (km <= 24000) {
-    const bands = (20000 - km) / 4000;
-    return bands * 682; // confirmed from honda.ca data
-  }
-  // Extra km above 24k: baked into amortization at $0.08/km × 5yr default
-  // Returns negative (residual drops)
-  const extraPerYear = km - 24000;
-  const termYears = 5; // assume 60mo
-  return -682 - (extraPerYear * termYears * 0.08); // -682 for first 4k above 20k, then extra
+// KM adjustment: ±2 percentage points per 4,000 km/yr from 24k base
+// Basis: confirmed Passport data (12k=44%, 20k=42%, 24k=40%)
+function kmResAdjPct(km) {
+  const bands = (24000 - km) / 4000;  // positive = fewer km than 24k = higher residual
+  return bands * 0.02;
 }
 
 // Fee breakdown helper
@@ -722,11 +651,20 @@ function optBW() {
        + (optWheelLock ? OPT_WHEELLOCK : 0);
 }
 
+function getEffMsrp(m)  { return msrpOv[m.id] ?? m.msrp; }
+function getEffFees(m)  {
+  if (feesOv[m.id] != null) {
+    const f = getFees(m);
+    return { ...f, total: feesOv[m.id] };
+  }
+  return getFees(m);
+}
+
 function R(m) {
   const o = ov[m.id] || {};
-  const basePrice = m.msrp + getFees(m).total - getIncAmt(m);
+  const incAdj = incOv[m.id] ?? 0;
   return {
-    price: priceOv[m.id] ?? basePrice,
+    price: priceOv[m.id] ?? (m.price - incAdj),
     lr36:  o.lr36  ?? m.lr[36],
     lr60:  o.lr60  ?? m.lr[60],
     rv36:  o.rv36  ?? m.rv[36],
@@ -857,6 +795,8 @@ function pick(id) {
   warrantyOpen = false;
   warrantySelected = null;
   finWarrantyOpen = {};
+  leaseWarrantyOpen = {};
+  moreOptionsOpen = false;
   leaseEquity = 0;
   feesUpfront = false;
   render();
@@ -865,7 +805,7 @@ function pick(id) {
 function render() {
   if (!cur) return;
   const m = cur, r = R(m);
-  const fees = getFees(m);
+  const fees = getEffFees(m);
   const tradeInEquity = tradeInVal - tradeInOwing;
   const tradeInPreTax = tradeInEquity / 1.13;
   const leaseEquityPreTax = leaseEquity / 1.13;
@@ -938,13 +878,18 @@ function render() {
     </div>
 
     <!-- PRICE TABLE -->
-    <div class="price-table">
-      <div class="pt-item">
+    <div class="price-table" style="flex-wrap:wrap;gap:0;padding:0;">
+      <!-- MSRP editable -->
+      <div class="pt-item" style="flex-direction:column;gap:3px;padding:10px 14px;">
         <div class="pt-lbl">MSRP</div>
-        <div class="pt-val dim">${ca$(m.msrp)}</div>
+        <input type="number" min="0" step="100" value="${getEffMsrp(m)}"
+          style="width:115px;background:var(--s3);border:1px solid var(--border2);color:var(--dim);padding:5px 7px;border-radius:5px;font-size:14px;font-weight:600;font-family:inherit;text-align:right;"
+          onkeydown="if(event.key==='Enter'){msrpOv[cur.id]=parseFloat(this.value)||m.msrp;delete priceOv[cur.id];render();this.blur();}">
+        ${msrpOv[m.id]!=null?`<span style="font-size:10px;color:var(--yellow)">edited <button onclick="delete msrpOv[cur.id];delete priceOv[cur.id];render()" style="color:var(--dim);background:none;border:none;cursor:pointer;font-size:10px;font-family:inherit;">✕</button></span>`:`<span style="font-size:10px;color:var(--muted)">press Enter</span>`}
       </div>
       <div class="pt-sep"></div>
-      <div class="pt-item">
+      <!-- FEES editable -->
+      <div class="pt-item" style="flex-direction:column;gap:3px;padding:10px 14px;">
         <div class="pt-lbl">
           <span class="tip-wrap">+ Fees
             <span class="tip-icon">i</span>
@@ -955,11 +900,14 @@ function render() {
               <div class="tip-row"><span>Environmental</span><span>${ca$(fees.env)}</span></div>
               <div class="tip-row"><span>${m.engine.includes('Hybrid')||m.engine.includes('Electric')?'EV Tire Duty+':'Tire Duty'}</span><span>${ca$(fees.tire)}</span></div>
               <div class="tip-row"><span>Dealer Fee</span><span>${ca$(fees.dealer)}</span></div>
-              <div class="tip-row tip-total"><span>Total Fees</span><span>${ca$(fees.total)}</span></div>
+              <div class="tip-row tip-total"><span>Standard Total</span><span>${ca$(fees.total)}</span></div>
             </span>
           </span>
         </div>
-        <div class="pt-val dim">+ ${ca$(fees.total)}</div>
+        <input type="number" min="0" step="50" value="${getEffFees(m).total}"
+          style="width:115px;background:var(--s3);border:1px solid var(--border2);color:var(--dim);padding:5px 7px;border-radius:5px;font-size:14px;font-weight:600;font-family:inherit;text-align:right;"
+          onkeydown="if(event.key==='Enter'){feesOv[cur.id]=parseFloat(this.value)||fees.total;delete priceOv[cur.id];render();this.blur();}">
+        ${feesOv[m.id]!=null?`<span style="font-size:10px;color:var(--yellow)">edited <button onclick="delete feesOv[cur.id];delete priceOv[cur.id];render()" style="color:var(--dim);background:none;border:none;cursor:pointer;font-size:10px;font-family:inherit;">✕</button></span>`:`<span style="font-size:10px;color:var(--muted)">press Enter</span>`}
       </div>
       <div class="pt-sep"></div>
       <div class="pt-item" style="flex-direction:column;align-items:flex-start;gap:4px">
@@ -970,7 +918,7 @@ function render() {
             style="width:110px;background:var(--s3);border:1px solid rgba(255,107,107,.3);color:#ff7070;padding:4px 8px;border-radius:5px;font-size:14px;font-weight:700;font-family:inherit;text-align:right;"
             onkeydown="if(event.key==='Enter'){incOv[cur.id]=parseFloat(this.value)||0;delete priceOv[cur.id];render();this.blur();}"
             title="Press Enter to apply">
-          <span style="font-size:11px;color:var(--dim)">press Enter to apply</span>
+          
           ${incOv[m.id]!=null?`<button onclick="delete incOv[cur.id];delete priceOv[cur.id];render()" style="font-size:10px;background:none;border:1px solid var(--border);color:var(--dim);padding:2px 7px;border-radius:4px;cursor:pointer;font-family:inherit">Reset</button>`:''}
         </div>
       </div>
@@ -983,7 +931,7 @@ function render() {
             style="width:130px;background:var(--s3);border:1px solid rgba(240,240,240,.2);color:var(--text);padding:4px 8px;border-radius:5px;font-size:16px;font-weight:700;font-family:inherit;text-align:right;"
             onkeydown="if(event.key==='Enter'){priceOv[cur.id]=parseFloat(this.value)||r.price;render();this.blur();}"
             title="Press Enter to apply">
-          <span style="font-size:11px;color:var(--dim)">press Enter to apply</span>
+          
           ${priceOv[m.id]!=null?`<button onclick="delete priceOv[cur.id];render()" style="font-size:10px;background:none;border:1px solid var(--border);color:var(--dim);padding:2px 7px;border-radius:4px;cursor:pointer;font-family:inherit">Reset</button>`:''}
         </div>
       </div>
@@ -1048,7 +996,7 @@ function render() {
         <input class="dp-custom" type="number" min="0" step="100"
           id="dp-input"
           value="${downPayment}"
-          placeholder="Enter & press Enter"
+          placeholder="Custom amount"
           onkeydown="if(event.key==='Enter'){setDP(parseFloat(this.value)||0);this.blur();}">
       </div>
       <div style="margin-left:12px;display:flex;align-items:center;gap:8px;border-left:1px solid var(--border);padding-left:14px;">
@@ -1104,23 +1052,7 @@ function render() {
     </div>
     ${kmAllowance === 40000 ? `<div style="font-size:11px;color:var(--yellow);margin:-6px 0 10px;padding:6px 16px;background:rgba(245,166,35,.06);border-radius:6px;border:1px solid rgba(245,166,35,.15)">* 40k/yr = 24k standard + 16k prepaid. Extra ${(kmAllowance-24000).toLocaleString()} km × 5yr × $0.08 = <strong>$${((kmAllowance-24000)*5*0.08).toLocaleString()}</strong> added to amortization. Residual reduced accordingly.</div>` : ''}
 
-    <!-- ADD-ONS -->
-    <div class="opt-bar">
-      <span class="opt-title">Add-ons</span>
-      <div class="opt-item">
-        <input class="opt-cb" type="checkbox" id="opt-color" ${optColor?'checked':''} onchange="optColor=this.checked;render()">
-        <label class="opt-lbl" for="opt-color">Colour <b>+$4.78/2wk</b></label>
-      </div>
-      <div class="opt-item">
-        <input class="opt-cb" type="checkbox" id="opt-wl" ${optWheelLock?'checked':''} onchange="optWheelLock=this.checked;render()">
-        <label class="opt-lbl" for="opt-wl">Wheel Locks <b>+$1.50/2wk</b></label>
-      </div>
-      <div class="opt-item">
-        <input class="opt-cb" type="checkbox" id="opt-prot" ${optProtection?'checked':''} onchange="optProtection=this.checked;render()">
-        <label class="opt-lbl" for="opt-prot">Protection Pkg <b>$${protCost(m).toLocaleString()}</b><span style="font-size:11px;color:var(--dim)"> · added to finance principal</span></label>
-      </div>
-      ${optBWval > 0 || optProtection ? `<span style="margin-left:auto;font-size:12px;color:var(--dim)">Total add-ons impact shown on each card</span>` : ''}
-    </div>
+
 
     <!-- WARRANTY PANEL -->
     ${warrantyOpen ? renderWarrantyPanel(m) : ''}
@@ -1154,7 +1086,7 @@ function render() {
     <!-- LEASE CARDS -->
     <div class="sec-hdr">Lease Options <span class="sec-note">&nbsp;· ${kmAllowance.toLocaleString()} km/yr · Enter actual HFS residual $ on each card for accurate payment</span></div>
     <div class="pgrid">
-      ${leaseCard('3 Year',36,l36mo,l36bw,res36,res36obj.pct,r.lr36,m.promo,true,optBWval,optMOval,res36confirmed,resOv[m.id]?.[36]??'',false)}
+      ${leaseCard('3 Year',36,l36mo,l36bw,res36,res36obj.pct,r.lr36,m.promo,true,optBWval,optMOval,res36confirmed,resOv[m.id]?.[36]??'',true)}
       ${l60mo!==null
         ? leaseCard('5 Year',60,l60mo,l60bw,res60,res60obj.pct,r.lr60,m.promo,false,optBWval,optMOval,res60confirmed,resOv[m.id]?.[60]??'',true)
         : `<div class="empty-card">No 5yr lease available for this model</div>`}
@@ -1165,6 +1097,58 @@ function render() {
     <div class="pgrid">
       ${finCard('5 Year',60,r.fr60,f60mo,f60bw,f60mog,f60bwg,f60mogp,f60bwgp,prot,m)}
       ${finCard('7 Year',84,r.fr84,f84mo,f84bw,f84mog,f84bwg,f84mogp,f84bwgp,prot,m)}
+    </div>
+
+    <!-- MORE OPTIONS: ALL TERMS -->
+    <div style="margin-bottom:16px">
+      <button onclick="moreOptionsOpen=!moreOptionsOpen;render()"
+        style="width:100%;background:${moreOptionsOpen?'rgba(74,158,255,.08)':'none'};border:1px solid ${moreOptionsOpen?'var(--blue)':'var(--border2)'};color:${moreOptionsOpen?'var(--blue)':'var(--dim)'};padding:10px;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:600;">
+        📊 ${moreOptionsOpen?'▲ Hide All Payment Terms':'More Options — View All Lease & Finance Terms ▼'}
+      </button>
+      ${moreOptionsOpen ? `
+      <div style="margin-top:12px;background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+        <div style="background:var(--s3);padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);">All Payment Options — 2026 ${m.name} ${m.trim} · ${kmAllowance.toLocaleString()} km/yr</div>
+        <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+          <!-- LEFT: ALL LEASE TERMS (24/30/36/42/48/54/60) -->
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;">Lease Options</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+              ${[[24,r.lr36],[30,r.lr36],[36,r.lr36],[42,r.lr36],[48,r.lr60],[54,r.lr60],[60,r.lr60]].map(([mo,rt]) => {
+                if (!rt) return '<div style="background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center;opacity:.3"><div style="font-size:11px;color:var(--dim);">' + mo + ' mo</div><div style="font-size:12px;color:var(--muted)">STD</div></div>';
+                const resObj = getRes(m, mo <= 36 ? 36 : 60);
+                const moP = lmo(cap, resObj.val, mo, rt);
+                const bwP = mo2bw(moP);
+                return '<div style="background:var(--s1);border:1px solid var(--blue-bdr);border-radius:7px;padding:8px;text-align:center;">'
+                  + '<div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:3px;">' + mo + ' months</div>'
+                  + '<div style="font-size:17px;font-weight:800;">' + ca$c(bwP) + '<span style="font-size:10px;font-weight:400;color:var(--dim)">/2wk</span></div>'
+                  + '<div style="font-size:12px;color:var(--dim);margin-top:2px;">' + ca$c(moP) + '/mo</div>'
+                  + '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + rt + '% · Res ' + ca$(resObj.val) + '</div>'
+                  + '</div>';
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- RIGHT: ALL FINANCE TERMS (24/36/48/60/72/84/96) -->
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;">Finance Options</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+              ${[[24,r.fr60],[36,r.fr60],[48,r.fr60],[60,r.fr60],[72,r.fr84],[84,r.fr84],[96,r.fr84]].map(([mo,rt]) => {
+                if (!rt) return '<div style="background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center;opacity:.3"><div style="font-size:11px;color:var(--dim);">' + mo + ' mo</div><div style="font-size:12px;color:var(--muted)">STD</div></div>';
+                const bwP = fbw(cap, mo, rt);
+                const moP = fmo(cap, mo, rt);
+                return '<div style="background:var(--s1);border:1px solid var(--green-bdr);border-radius:7px;padding:8px;text-align:center;">'
+                  + '<div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:3px;">' + mo + ' months</div>'
+                  + '<div style="font-size:17px;font-weight:800;">' + ca$c(bwP) + '<span style="font-size:10px;font-weight:400;color:var(--dim)">/2wk</span></div>'
+                  + '<div style="font-size:12px;color:var(--dim);margin-top:2px;">' + ca$c(moP) + '/mo</div>'
+                  + '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + rt + '% APR</div>'
+                  + '</div>';
+              }).join('')}
+            </div>
+          </div>
+
+        </div>
+      </div>` : ''}
     </div>
 
     <!-- DISCLAIMER -->
@@ -1264,6 +1248,31 @@ function leaseCard(label, months, monthly, biw, resVal, resPct, rate, promo, is3
           </div>
         </div>
         ${!resConfirmed ? `<div style="font-size:10px;color:rgba(245,166,35,.6);text-align:right;margin-top:5px">Payment changes when you enter actual HFS residual →</div>` : ''}
+        <!-- WARRANTY SUB-MENU (LEASE) -->
+        <div style="margin-top:10px">
+          <button onclick="leaseWarrantyOpen[${months}]=!leaseWarrantyOpen[${months}];render()"
+            style="width:100%;background:${warrantySelected?'rgba(0,212,122,.08)':'none'};border:1px solid ${warrantySelected?'var(--green)':'var(--border2)'};color:${warrantySelected?'var(--green)':'var(--dim)'};padding:7px;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;">
+            🛡 Warranty ${warrantySelected?'✓ '+warrantySelected.label : leaseWarrantyOpen[months]?'▲ Hide':'▼ Add'}
+          </button>
+          ${leaseWarrantyOpen[months] && cur ? `
+          <div style="margin-top:8px;background:var(--s3);border:1px solid var(--border);border-radius:7px;padding:10px;max-height:180px;overflow-y:auto;">
+            ${WARRANTY_PLANS.map((p) => {
+              const tier2 = cur ? warrantyTier(cur) : 'civic';
+              const cost2 = getWarrantyPrice(p, tier2);
+              if (!cost2) return '';
+              const isSel = warrantySelected?.label === p.label;
+              return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);gap:6px">'
+                + '<span style="font-size:11px;' + (isSel?'color:var(--green);font-weight:700':'color:var(--dim)') + '">' + p.label + '</span>'
+                + '<span style="font-size:11px;font-weight:600">$' + cost2.toLocaleString() + '</span>'
+                + '<button onclick="selectWarranty(\'' + p.label + '\',' + cost2 + ')" style="font-size:10px;padding:2px 8px;border-radius:3px;cursor:pointer;font-family:inherit;background:' + (isSel?'rgba(0,212,122,.2)':'none') + ';border:1px solid ' + (isSel?'var(--green)':'var(--border2)') + ';color:' + (isSel?'var(--green)':'var(--dim)') + '">' + (isSel?'✓':'Select') + '</button>'
+                + '</div>';
+            }).join('')}
+          </div>` : ''}
+          ${warrantySelected ? `
+          <div style="margin-top:6px;padding:7px 10px;background:rgba(0,212,122,.06);border:1px solid var(--green-bdr);border-radius:5px;font-size:12px;color:var(--green)">
+            ✓ ${warrantySelected.label} · $${warrantySelected.cost.toLocaleString()} (shown in finance cards)
+          </div>` : ''}
+        </div>
       </div>
     </div>`;
 }
@@ -1363,6 +1372,8 @@ function selectWarranty(label, cost) {
 }
 
 let finWarrantyOpen = {}; // { 60: bool, 84: bool }
+let leaseWarrantyOpen = {}; // { 36: bool, 60: bool }
+let moreOptionsOpen = false;
 
 function setKM(km) {
   kmAllowance = km;
@@ -1699,7 +1710,7 @@ function printQuote() {
 
 <!-- VEHICLE -->
 <div class="veh">
-  <div class="veh-name">${m.yr} ${m.name} <span class="veh-trim">${m.trim}</span></div>
+  <div class="veh-name">2026 ${m.name} <span class="veh-trim">${m.trim}</span></div>
   <div class="veh-sub">
     <span>MSRP: <b>${ca$(m.msrp)}</b></span>
     <span class="price">${ca$(r.price)}</span>
