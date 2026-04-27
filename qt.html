@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <script>if(typeof sessionStorage!=="undefined"&&sessionStorage.getItem("mh_qt_auth")!=="1"){window.location.replace("quote.html");}</script>
-<title>CleanQuotes — Maple Honda</title>
+<title>CleanQuotes</title>
 <style>
 :root {
   --red:      #E40521;
@@ -531,6 +531,7 @@ const ca$c  = n  => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 // ═══════════════════════════════════════════════════════════════════════
 let cur = null, ov = {}, panelOpen = false;
 let downPayment = 0;
+let dpPct = null;
 let gapAmt = 2500;
 let optColor = false, optWheelLock = false, optLeaseGuard = false;
 let resOv = {};   // Per-model HFS residual overrides
@@ -1024,9 +1025,11 @@ function render() {
     <div class="dp-bar">
       <span class="dp-label">Down Payment</span>
       <div class="dp-presets">
-        ${[0,500,1000,2000,5000].map(v => `
-          <button class="dp-btn ${downPayment===v?'active':''}" onclick="setDP(${v})">${v===0?'$0 Down':'$'+v.toLocaleString()}</button>
-        `).join('')}
+        <button class="dp-btn ${dpPct===0?'active':''}" onclick="setDPPct(0)">$0 Down</button>
+        ${[5,10,15,20].map(p => {
+          const amt = Math.round(R(cur).price * p / 100);
+          return `<button class="dp-btn ${dpPct===p?'active':''}" onclick="setDPPct(${p})">${p}% <span style="font-size:10px;opacity:.7">$${amt.toLocaleString()}</span></button>`;
+        }).join('')}
       </div>
       <div class="dp-custom-wrap">
         <span class="tip-wrap dp-custom-label">Custom Downpayment
@@ -1226,11 +1229,6 @@ function render() {
     </div>
   `;
 
-  // Re-sync down payment active button
-  document.querySelectorAll('.dp-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.textContent.replace(/[^0-9]/g,''))||0 === downPayment ||
-      (b.textContent.includes('$0') && downPayment === 0));
-  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1426,6 +1424,13 @@ function setKM(km) {
 
 function setDP(val) {
   downPayment = Math.max(0, val);
+  dpPct = null;
+  render();
+}
+function setDPPct(pct) {
+  dpPct = pct;
+  downPayment = pct === 0 ? 0 : Math.round(R(cur).price * pct / 100);
+  document.getElementById('dp-input').value = downPayment;
   render();
 }
 
