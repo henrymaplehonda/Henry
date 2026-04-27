@@ -93,6 +93,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;background:var(-
 .ct-empty{text-align:center;padding:60px;color:var(--muted);}
 .ct-empty-icon{font-size:40px;margin-bottom:12px;}
 
+/* ── DOWN PAYMENT BTNS ── */
+.dp-btn{background:none;border:1px solid var(--border2);color:var(--dim);padding:5px 12px;border-radius:5px;font-size:13px;font-family:inherit;cursor:pointer;transition:all .13s;}
+.dp-btn:hover{border-color:var(--text);color:var(--text);}
+.dp-btn.active{background:rgba(228,5,33,.12);border-color:var(--red);color:#ff7070;font-weight:600;}
+
 /* PRINT */
 @media print{
   .hdr,.picker-bar,.hdr-nav,.modal-overlay{display:none!important;}
@@ -142,6 +147,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;background:var(-
   </div>
 </div>
 
+<!-- DOWN PAYMENT BAR -->
+<div style="background:var(--s1);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+  <span style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);flex-shrink:0;">Down Payment</span>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;" id="dp-presets">
+    <button class="dp-btn active" id="dpb0" onclick="setDp(0)">$0</button>
+    <button class="dp-btn" id="dpb500" onclick="setDp(500)">$500</button>
+    <button class="dp-btn" id="dpb1000" onclick="setDp(1000)">$1,000</button>
+    <button class="dp-btn" id="dpb2000" onclick="setDp(2000)">$2,000</button>
+    <button class="dp-btn" id="dpb5000" onclick="setDp(5000)">$5,000</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:7px;margin-left:auto;">
+    <span style="font-size:12px;color:var(--dim);white-space:nowrap;">Custom $</span>
+    <input type="number" min="0" step="500" id="dp-custom" placeholder="0"
+      style="width:100px;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:5px;font-size:13px;font-family:inherit;outline:none;"
+      oninput="setDp(parseInt(this.value)||0,true)"
+      onfocus="this.style.borderColor='var(--red)'"
+      onblur="this.style.borderColor='var(--border)'">
+  </div>
+</div>
+
 <!-- COMPARE TABLE -->
 <div class="compare-wrap">
   <div id="compare-out">
@@ -165,7 +190,7 @@ const M = [
  lr:{36:3.49,60:4.49}, rv:{36:.58,60:.40}, fr:{60:4.49,84:4.99}},
 {id:'cs-sp', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport',
  msrp:32200, price:35175, otd:39748, engine:'2.0L 150hp', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.55,60:.37}, fr:{60:4.49,84:4.99}},
+ lr:{36:3.49,60:4.49}, rv:{36:.58,60:.40}, fr:{60:4.49,84:4.99}},
 {id:'cs-sh', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport Hybrid',
  msrp:34100, price:37071, otd:41879, engine:'2.0L Hybrid', drive:'FWD',
  lr:{36:3.49,60:4.49}, rv:{36:.61,60:.43}, fr:{60:4.49,84:4.99}},
@@ -192,10 +217,10 @@ const M = [
  lr:{36:3.99,60:4.99}, rv:{36:.56,60:.39}, fr:{60:4.99,84:5.99}},
 {id:'ac-sl', cat:'Accord', name:'Accord', trim:'Sport-L Hybrid',
  msrp:43700, price:46671, otd:52738, engine:'2.0L Hybrid', drive:'FWD',
- lr:{36:3.99,60:4.99}, rv:{36:.54,60:.40}, fr:{60:3.99,84:4.49}},
+ lr:{36:3.49,60:4.49}, rv:{36:.59,60:.39}, fr:{60:3.99,84:4.49}},
 {id:'ac-tr', cat:'Accord', name:'Accord', trim:'Touring Hybrid',
  msrp:46200, price:49171, otd:55563, engine:'2.0L Hybrid', drive:'FWD',
- lr:{36:3.49,60:4.49}, rv:{36:.53,60:.39}, fr:{60:3.99,84:4.49}},
+ lr:{36:3.49,60:4.49}, rv:{36:.59,60:.39}, fr:{60:3.99,84:4.49}},
 {id:'hv-lf', cat:'HR-V', name:'HR-V', trim:'LX FWD',
  msrp:30465, price:33436, otd:37783, engine:'2.0L 158hp', drive:'FWD',
  lr:{36:4.49,60:5.49}, rv:{36:.59,60:.42}, fr:{60:5.99,84:5.99}},
@@ -303,6 +328,18 @@ let leaseTerm = 24, finTerm = 60, downPayment = 0;
 const LEASE_TERMS = [24,30,36,42,48,54,60];
 const FIN_TERMS   = [24,36,48,60,72,84,96];
 
+function setDp(v, fromInput=false) {
+  downPayment = v;
+  if (!fromInput) {
+    const inp = document.getElementById('dp-custom');
+    if (inp) { inp.value = v > 0 ? v : ''; }
+  }
+  document.querySelectorAll('.dp-btn').forEach(b => b.classList.remove('active'));
+  const preset = document.getElementById('dpb' + v);
+  if (preset) preset.classList.add('active');
+  renderCompare();
+}
+
 // ── SLOTS UI ──────────────────────────────────────────────────────
 function renderSlots() {
   document.getElementById('slots').innerHTML = [0,1,2].map(i => {
@@ -398,7 +435,11 @@ function renderCompare() {
   const lmop  = m => { const rt=lrt(m); if(!rt)return null; return lmo(cap(m),lres(m),leaseTerm,rt); };
 
   // Finance calcs
-  const frt   = m => finTerm <= 60 ? m.fr[60] : m.fr[84];
+  const frt = m => {
+    if (finTerm <= 60) return m.fr[60];
+    if (finTerm <= 84) return m.fr[84];
+    return m.fr[96] ?? 6.69;
+  };
   const fbwv  = m => { const rt=frt(m); if(!rt)return null; return fbw(cap(m),finTerm,rt); };
   const fmov  = m => { const rt=frt(m); if(!rt)return null; return fmo(cap(m),finTerm,rt); };
 
@@ -412,10 +453,7 @@ function renderCompare() {
   const nCols = active.length;
   const colW  = `${Math.floor(85/nCols)}%`;
 
-  // Down payment options
-  const dpOpts = [0,500,1000,2000,5000].map(v =>
-    `<option value="${v}" ${downPayment===v?'selected':''}>${v===0?'$0 Down':'$'+v.toLocaleString()}</option>`
-  ).join('');
+  // (down payment controlled by top bar)
 
   const bestLbw = best(active, m => { const v=lbw(m); return v ? ca$c(v) : 'Z'; });
   const bestFbw = best(active, m => { const v=fbwv(m); return v ? ca$c(v) : 'Z'; });
@@ -430,11 +468,8 @@ function renderCompare() {
       <!-- HEADER -->
       <tr class="ct-hdr">
         <td>
-          <div style="margin-bottom:6px">Down:
-            <select onchange="downPayment=parseInt(this.value);renderCompare()"
-              style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:3px 6px;border-radius:4px;font-size:12px;font-family:inherit;outline:none;margin-left:4px">
-              ${dpOpts}
-            </select>
+          <div style="font-size:10px;color:var(--dim);letter-spacing:.5px;">
+            ${downPayment>0?`Down: <strong style="color:var(--text)">$${downPayment.toLocaleString()}</strong>`:''}
           </div>
         </td>
         ${active.map((m,i) => `
@@ -451,7 +486,7 @@ function renderCompare() {
         ${active.map(m=>`<td class="ct-val dim">${ca$(m.msrp)}</td>`).join('')}
       </tr>
       <tr class="ct-row">
-        <td class="ct-label">Selling Price (Before Tax)</td>
+        <td class="ct-label">Selling Price</td>
         ${active.map((m,i)=>{
           const isLow = best(active, x=>ca$(x.price))[i];
           return `<td class="ct-val ${isLow?'best green':''}" style="font-size:17px;font-weight:700">${ca$(m.price)}</td>`;

@@ -188,9 +188,14 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
         style="background:none;border:none;border-bottom:2px solid transparent;color:var(--dim);padding:10px 20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">
         📊 Residuals (Bulk)
       </button>
+      <button id="tab-rates" onclick="switchTab('rates')"
+        style="background:none;border:none;border-bottom:2px solid transparent;color:var(--dim);padding:10px 20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">
+        📋 Rates Program
+      </button>
     </div>
     <div id="tab-models-body"></div>
     <div id="tab-residuals-body" style="display:none"></div>
+    <div id="tab-rates-body" style="display:none"></div>
   </div>
 
 </div>
@@ -226,172 +231,172 @@ document.getElementById('pw').addEventListener('keydown', e => {
 // ══════════════════════════════════════════════════════════════════
 const DEFAULT_MODELS = [
 {id:'cs-lx', cat:'Civic Sedan', name:'Civic Sedan', trim:'LX', yr:2026,
- msrp:28340, price:31306, otd:35376, engine:'2.0L 150hp / CVT', drive:'FWD',
+ msrp:28340, price:31306, otd:35376, engine:'2.0L 150hp', drive:'FWD',
  lr36:3.49, lr60:4.49, rv36:58, rv60:40, fr60:4.49, fr84:4.99},
 
 {id:'cs-sp', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport', yr:2026,
- msrp:32200, price:35175, otd:39748, engine:'2.0L 150hp / CVT', drive:'FWD',
- lr36:3.49, lr60:4.49, rv36:55, rv60:37, fr60:4.49, fr84:4.99},
+ msrp:32200, price:35175, otd:39748, engine:'2.0L 150hp', drive:'FWD',
+ lr36:3.49, lr60:4.49, rv36:58, rv60:40, fr60:4.49, fr84:4.99, fr96:6.69},
 
 {id:'cs-sh', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport Hybrid', yr:2026,
- msrp:34100, price:37071, otd:41879, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
+ msrp:34100, price:37071, otd:41879, engine:'2.0L Hybrid 200hp', drive:'FWD',
  lr36:3.49, lr60:4.49, rv36:61, rv60:43, fr60:4.49, fr84:4.99},
 
 {id:'cs-sth', cat:'Civic Sedan', name:'Civic Sedan', trim:'Sport Touring Hybrid', yr:2026,
- msrp:37600, price:40561, otd:45834, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
+ msrp:37600, price:40561, otd:45834, engine:'2.0L Hybrid 200hp', drive:'FWD',
  lr36:3.49, lr60:4.49, rv36:61, rv60:43, fr60:4.49, fr84:4.99},
 
 {id:'cs-si', cat:'Civic Sedan', name:'Civic Sedan', trim:'Si', yr:2026,
- msrp:36600, price:39566, otd:44710, engine:'1.5T 200hp / 6-MT', drive:'FWD',
+ msrp:36600, price:39566, otd:44710, engine:'1.5T 200hp', drive:'FWD',
  lr36:null, lr60:null, rv36:58, rv60:39, fr60:6.99, fr84:6.99},
 
 {id:'ch-sp', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport', yr:2026,
- msrp:32195, price:35166, otd:39738, engine:'2.0L 150hp / CVT', drive:'FWD',
+ msrp:32195, price:35166, otd:39738, engine:'2.0L 150hp', drive:'FWD',
  lr36:3.99, lr60:4.99, rv36:58, rv60:40, fr60:4.99, fr84:5.49},
 
 {id:'ch-sh', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport Hybrid', yr:2026,
- msrp:35991, price:38962, otd:44027, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
+ msrp:35991, price:38962, otd:44027, engine:'2.0L Hybrid 200hp', drive:'FWD',
  lr36:4.49, lr60:5.49, rv36:61, rv60:43, fr60:5.49, fr84:5.99},
 
 {id:'ch-sth', cat:'Civic Hatchback', name:'Civic Hatchback', trim:'Sport Touring Hybrid', yr:2026,
- msrp:39491, price:42462, otd:47982, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
+ msrp:39491, price:42462, otd:47982, engine:'2.0L Hybrid 200hp', drive:'FWD',
  lr36:4.49, lr60:5.49, rv36:61, rv60:43, fr60:5.49, fr84:5.99},
 
 {id:'pre', cat:'Prelude', name:'Prelude', trim:'Hybrid', yr:2026,
- msrp:49990, price:52961, otd:59846, engine:'2.0L Hybrid 200hp / e-CVT', drive:'FWD',
+ msrp:49990, price:52961, otd:59846, engine:'2.0L Hybrid 200hp', drive:'FWD',
  lr36:null, lr60:null, rv36:62, rv60:44, fr60:null, fr84:null},
 
 {id:'ac-se', cat:'Accord', name:'Accord', trim:'SE', yr:2026,
- msrp:38500, price:41475, otd:46867, engine:'1.5T 192hp / CVT', drive:'FWD',
+ msrp:38500, price:41475, otd:46867, engine:'1.5T 192hp', drive:'FWD',
  lr36:3.99, lr60:4.99, rv36:56, rv60:39, fr60:4.99, fr84:5.99},
 
 {id:'ac-sl', cat:'Accord', name:'Accord', trim:'Sport-L Hybrid', yr:2026,
- msrp:43700, price:46671, otd:52738, engine:'2.0L Hybrid 204hp / e-CVT', drive:'FWD',
- lr36:3.99, lr60:4.99, rv36:54, rv60:40, fr60:3.99, fr84:4.49},
+ msrp:43700, price:46671, otd:52738, engine:'2.0L Hybrid 204hp', drive:'FWD',
+ lr36:3.49, lr60:4.49, rv36:59, rv60:39, fr60:3.99, fr84:4.49, fr96:6.69},
 
 {id:'ac-tr', cat:'Accord', name:'Accord', trim:'Touring Hybrid', yr:2026,
- msrp:46200, price:49171, otd:55563, engine:'2.0L Hybrid 204hp / e-CVT', drive:'FWD',
- lr36:3.49, lr60:4.49, rv36:53, rv60:39, fr60:3.99, fr84:4.49},
+ msrp:46200, price:49171, otd:55563, engine:'2.0L Hybrid 204hp', drive:'FWD',
+ lr36:3.49, lr60:4.49, rv36:59, rv60:39, fr60:3.99, fr84:4.49, fr96:6.69},
 
 {id:'hv-lf', cat:'HR-V', name:'HR-V', trim:'LX FWD', yr:2026,
- msrp:30465, price:33436, otd:37783, engine:'2.0L 158hp / CVT', drive:'FWD',
+ msrp:30465, price:33436, otd:37783, engine:'2.0L 158hp', drive:'FWD',
  lr36:4.49, lr60:5.49, rv36:59, rv60:42, fr60:5.99, fr84:5.99},
 
 {id:'hv-la', cat:'HR-V', name:'HR-V', trim:'LX AWD', yr:2026,
- msrp:32591, price:35736, otd:40382, engine:'2.0L 158hp / CVT', drive:'AWD',
+ msrp:32591, price:35736, otd:40382, engine:'2.0L 158hp', drive:'AWD',
  lr36:4.49, lr60:5.49, rv36:58, rv60:41, fr60:5.99, fr84:5.99},
 
 {id:'hv-sp', cat:'HR-V', name:'HR-V', trim:'Sport AWD', yr:2026,
- msrp:35891, price:39036, otd:44111, engine:'2.0L 158hp / CVT', drive:'AWD',
+ msrp:35891, price:39036, otd:44111, engine:'2.0L 158hp', drive:'AWD',
  lr36:4.49, lr60:5.49, rv36:57, rv60:39, fr60:5.99, fr84:5.99},
 
 {id:'hv-el', cat:'HR-V', name:'HR-V', trim:'EX-L AWD', yr:2026,
- msrp:38691, price:41836, otd:47275, engine:'2.0L 158hp / CVT', drive:'AWD',
+ msrp:38691, price:41836, otd:47275, engine:'2.0L 158hp', drive:'AWD',
  lr36:4.49, lr60:5.49, rv36:56, rv60:38, fr60:5.99, fr84:5.99},
 
 {id:'cv-lf', cat:'CR-V', name:'CR-V', trim:'LX 2WD', yr:2026,
- msrp:36966, price:40111, otd:45325, engine:'1.5T 190hp / CVT', drive:'FWD',
+ msrp:36966, price:40111, otd:45325, engine:'1.5T 190hp', drive:'FWD',
  lr36:3.99, lr60:4.99, rv36:58, rv60:41, fr60:5.19, fr84:5.19},
 
 {id:'cv-la', cat:'CR-V', name:'CR-V', trim:'LX AWD', yr:2026,
- msrp:39766, price:42911, otd:48489, engine:'1.5T 190hp / CVT', drive:'AWD',
+ msrp:39766, price:42911, otd:48489, engine:'1.5T 190hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:58, rv60:41, fr60:5.19, fr84:5.19},
 
 {id:'cv-sp', cat:'CR-V', name:'CR-V', trim:'Sport AWD', yr:2026,
- msrp:43366, price:46511, otd:52557, engine:'1.5T 190hp / CVT', drive:'AWD',
+ msrp:43366, price:46511, otd:52557, engine:'1.5T 190hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:58, rv60:41, fr60:5.19, fr84:5.19},
 
 {id:'cv-sh', cat:'CR-V', name:'CR-V', trim:'Sport Hybrid AWD', yr:2026,
- msrp:45887, price:49032, otd:55406, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
+ msrp:45887, price:49032, otd:55406, engine:'2.0L Hybrid 204hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:60, rv60:43, fr60:5.19, fr84:5.19},
 
 {id:'cv-ts', cat:'CR-V', name:'CR-V', trim:'TrailSport Hybrid AWD', yr:2026,
- msrp:47287, price:50432, otd:56988, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
+ msrp:47287, price:50432, otd:56988, engine:'2.0L Hybrid 204hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:60, rv60:43, fr60:5.19, fr84:5.19},
 
 {id:'cv-ex', cat:'CR-V', name:'CR-V', trim:'EX-L Hybrid AWD', yr:2026,
- msrp:48687, price:51832, otd:58570, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
+ msrp:48687, price:51832, otd:58570, engine:'2.0L Hybrid 204hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:60, rv60:43, fr60:5.19, fr84:5.19},
 
 {id:'cv-th', cat:'CR-V', name:'CR-V', trim:'Touring Hybrid AWD', yr:2026,
- msrp:51187, price:54332, otd:61395, engine:'2.0L Hybrid 204hp / e-CVT', drive:'AWD',
+ msrp:51187, price:54332, otd:61395, engine:'2.0L Hybrid 204hp', drive:'AWD',
  lr36:3.99, lr60:4.99, rv36:60, rv60:43, fr60:5.19, fr84:5.19},
 
 {id:'pp-ts', cat:'Passport', name:'Passport', trim:'TrailSport', yr:2026,
- msrp:56981, price:60126, otd:67942, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:56981, price:60126, otd:67942, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:40, fr60:5.79, fr84:5.79},
 
 {id:'pp-tb', cat:'Passport', name:'Passport', trim:'TrailSport Blackout', yr:2026,
- msrp:58181, price:61326, otd:69298, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:58181, price:61326, otd:69298, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:40, fr60:5.79, fr84:5.79},
 
 {id:'pp-tr', cat:'Passport', name:'Passport', trim:'Touring', yr:2026,
- msrp:60531, price:63676, otd:71954, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:60531, price:63676, otd:71954, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:40, fr60:5.79, fr84:5.79},
 
 {id:'pp-trb', cat:'Passport', name:'Passport', trim:'Touring Blackout', yr:2026,
- msrp:61731, price:64876, otd:73310, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:61731, price:64876, otd:73310, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:40, fr60:5.79, fr84:5.79},
 
 {id:'pl-sp', cat:'Pilot', name:'Pilot', trim:'Sport', yr:2026,
- msrp:55550, price:58695, otd:66325, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:55550, price:58695, otd:66325, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:58, rv60:42, fr60:5.79, fr84:5.79},
 
 {id:'pl-el', cat:'Pilot', name:'Pilot', trim:'EX-L', yr:2026,
- msrp:58150, price:61295, otd:69263, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:58150, price:61295, otd:69263, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:58, rv60:42, fr60:5.79, fr84:5.79},
 
 {id:'pl-ts', cat:'Pilot', name:'Pilot', trim:'TrailSport', yr:2026,
- msrp:61650, price:64795, otd:73218, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:61650, price:64795, otd:73218, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:58, rv60:42, fr60:5.79, fr84:5.79},
 
 {id:'pl-tr', cat:'Pilot', name:'Pilot', trim:'Touring', yr:2026,
- msrp:64900, price:68045, otd:76891, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:64900, price:68045, otd:76891, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:58, rv60:42, fr60:5.79, fr84:5.79},
 
 {id:'pl-be', cat:'Pilot', name:'Pilot', trim:'Black Edition', yr:2026,
- msrp:66400, price:69545, otd:78586, engine:'3.5L V6 285hp / 10AT', drive:'AWD',
+ msrp:66400, price:69545, otd:78586, engine:'3.5L V6 285hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:58, rv60:42, fr60:5.79, fr84:5.79},
 
 {id:'od-sp', cat:'Odyssey', name:'Odyssey', trim:'Sport', yr:2026,
- msrp:51411, price:54556, otd:61648, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
+ msrp:51411, price:54556, otd:61648, engine:'3.5L V6 280hp', drive:'FWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:39, fr60:5.79, fr84:5.79},
 
 {id:'od-sl', cat:'Odyssey', name:'Odyssey', trim:'Sport-L', yr:2026,
- msrp:54411, price:57556, otd:65038, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
+ msrp:54411, price:57556, otd:65038, engine:'3.5L V6 280hp', drive:'FWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:39, fr60:5.79, fr84:5.79},
 
 {id:'od-tr', cat:'Odyssey', name:'Odyssey', trim:'Touring', yr:2026,
- msrp:59811, price:62956, otd:71140, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
+ msrp:59811, price:62956, otd:71140, engine:'3.5L V6 280hp', drive:'FWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:39, fr60:5.79, fr84:5.79},
 
 {id:'od-be', cat:'Odyssey', name:'Odyssey', trim:'Black Edition', yr:2026,
- msrp:61611, price:64756, otd:73174, engine:'3.5L V6 280hp / 10AT', drive:'FWD',
+ msrp:61611, price:64756, otd:73174, engine:'3.5L V6 280hp', drive:'FWD',
  lr36:5.69, lr60:5.69, rv36:56, rv60:39, fr60:5.79, fr84:5.79},
 
 {id:'rl-sp', cat:'Ridgeline', name:'Ridgeline', trim:'Sport', yr:2026,
- msrp:52900, price:56135, otd:63433, engine:'3.5L V6 280hp / 9AT', drive:'AWD',
+ msrp:52900, price:56135, otd:63433, engine:'3.5L V6 280hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:59, rv60:45, fr60:5.79, fr84:5.79},
 
 {id:'rl-ts', cat:'Ridgeline', name:'Ridgeline', trim:'TrailSport', yr:2026,
- msrp:56490, price:59635, otd:67388, engine:'3.5L V6 280hp / 9AT', drive:'AWD',
+ msrp:56490, price:59635, otd:67388, engine:'3.5L V6 280hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:59, rv60:45, fr60:5.79, fr84:5.79},
 
 {id:'rl-be', cat:'Ridgeline', name:'Ridgeline', trim:'Black Edition', yr:2026,
- msrp:58990, price:62135, otd:70213, engine:'3.5L V6 280hp / 9AT', drive:'AWD',
+ msrp:58990, price:62135, otd:70213, engine:'3.5L V6 280hp', drive:'AWD',
  lr36:5.69, lr60:5.69, rv36:59, rv60:45, fr60:5.79, fr84:5.79},
 
 {id:'pr-ex', cat:'Prologue', name:'Prologue', trim:'EX', yr:2026,
  msrp:54990, price:58131, otd:66338, engine:'Electric / Single Motor', drive:'FWD',
- lr36:null, lr60:null, rv36:49, rv60:31, fr60:1.99, fr84:1.99},
+ lr36:null, lr60:null, rv36:49, rv60:31, fr60:1.99, fr84:1.99, fr96:1.99},
 
 {id:'pr-el', cat:'Prologue', name:'Prologue', trim:'EX-L', yr:2026,
  msrp:59990, price:63131, otd:71988, engine:'Electric / Dual Motor', drive:'AWD',
- lr36:null, lr60:null, rv36:47, rv60:30, fr60:1.99, fr84:1.99},
+ lr36:null, lr60:null, rv36:47, rv60:30, fr60:1.99, fr84:1.99, fr96:1.99},
 
 {id:'pr-tr', cat:'Prologue', name:'Prologue', trim:'Touring', yr:2026,
  msrp:64990, price:68131, otd:77638, engine:'Electric / Dual Motor', drive:'AWD',
- lr36:null, lr60:null, rv36:45, rv60:29, fr60:1.99, fr84:1.99},
+ lr36:null, lr60:null, rv36:45, rv60:29, fr60:1.99, fr84:1.99, fr96:1.99},
 ];
 
 const DEFAULT_META = {
@@ -439,15 +444,121 @@ function saveMeta() {
 //  RENDER MODELS
 // ══════════════════════════════════════════════════════════════════
 function switchTab(tab) {
-  document.getElementById('tab-models-body').style.display   = tab==='models'    ? 'block' : 'none';
+  document.getElementById('tab-models-body').style.display    = tab==='models'    ? 'block' : 'none';
   document.getElementById('tab-residuals-body').style.display = tab==='residuals' ? 'block' : 'none';
-  document.getElementById('tab-models').style.background    = tab==='models'    ? 'rgba(228,5,33,.1)' : 'none';
-  document.getElementById('tab-residuals').style.background  = tab==='residuals' ? 'rgba(0,212,122,.08)' : 'none';
-  document.getElementById('tab-models').style.borderBottomColor    = tab==='models'    ? 'var(--red)' : 'transparent';
-  document.getElementById('tab-residuals').style.borderBottomColor  = tab==='residuals' ? 'var(--green)' : 'transparent';
-  document.getElementById('tab-models').style.color    = tab==='models'    ? 'var(--text)' : 'var(--dim)';
-  document.getElementById('tab-residuals').style.color  = tab==='residuals' ? 'var(--green)' : 'var(--dim)';
+  document.getElementById('tab-rates-body').style.display     = tab==='rates'     ? 'block' : 'none';
+  ['models','residuals','rates'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (!el) return;
+    const isActive = t === tab;
+    el.style.background       = isActive ? (t==='models'?'rgba(228,5,33,.1)':t==='residuals'?'rgba(0,212,122,.08)':'rgba(74,158,255,.08)') : 'none';
+    el.style.borderBottomColor= isActive ? (t==='models'?'var(--red)':t==='residuals'?'var(--green)':'var(--blue)') : 'transparent';
+    el.style.color            = isActive ? (t==='models'?'var(--text)':t==='residuals'?'var(--green)':'var(--blue)') : 'var(--dim)';
+  });
   if (tab === 'residuals') renderResiduals();
+  if (tab === 'rates') renderRates();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RATES PROGRAM BULK EDITOR
+// ══════════════════════════════════════════════════════════════════
+function renderRates() {
+  // Build unique model groups with their current representative rates
+  const cats = [...new Set(models.map(m => m.cat))];
+  const html = `
+    <div style="margin-bottom:16px;background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:12px 16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;">📋 Rates Program — Bulk Rate Editor</div>
+      <div style="font-size:12px;color:var(--dim);line-height:1.7;">
+        When a new Honda program comes out, update rates here by model group. Click <strong style="color:var(--text)">Apply to All in Group</strong> to push rates to all trims in that group.
+        Then click <strong style="color:var(--green)">Save All</strong> and export qt.html.
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:var(--s2);border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);min-width:160px;">Model Group</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--blue);">Lease 36mo %</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--blue);">Lease 60mo %</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--green);">Finance 60mo %</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--green);">Finance 84mo %</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--green);">Finance 96mo %</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--dim);">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${cats.map((cat, i) => {
+            const rep = models.find(m => m.cat === cat) || {};
+            const bg = i%2===0 ? 'background:var(--s1)' : 'background:var(--s2)';
+            return `<tr style="${bg};border-bottom:1px solid var(--border);" id="raterow-${i}">
+              <td style="padding:10px 12px;font-weight:600;">${cat}
+                <div style="font-size:10px;color:var(--dim);font-weight:400;">${models.filter(m=>m.cat===cat).length} trims</div>
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <input type="number" step="0.01" min="0" max="20" id="rr-lr36-${i}"
+                  value="${rep.lr36??''}" placeholder="STD"
+                  style="width:68px;background:var(--s3);border:1px solid rgba(74,158,255,.3);color:var(--blue);padding:5px 6px;border-radius:5px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;">
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <input type="number" step="0.01" min="0" max="20" id="rr-lr60-${i}"
+                  value="${rep.lr60??''}" placeholder="STD"
+                  style="width:68px;background:var(--s3);border:1px solid rgba(74,158,255,.3);color:var(--blue);padding:5px 6px;border-radius:5px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;">
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <input type="number" step="0.01" min="0" max="20" id="rr-fr60-${i}"
+                  value="${rep.fr60??''}" placeholder="STD"
+                  style="width:68px;background:var(--s3);border:1px solid rgba(0,212,122,.3);color:var(--green);padding:5px 6px;border-radius:5px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;">
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <input type="number" step="0.01" min="0" max="20" id="rr-fr84-${i}"
+                  value="${rep.fr84??''}" placeholder="STD"
+                  style="width:68px;background:var(--s3);border:1px solid rgba(0,212,122,.3);color:var(--green);padding:5px 6px;border-radius:5px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;">
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <input type="number" step="0.01" min="0" max="20" id="rr-fr96-${i}"
+                  value="${rep.fr96??6.69}" placeholder="6.69"
+                  style="width:68px;background:var(--s3);border:1px solid rgba(0,212,122,.3);color:var(--green);padding:5px 6px;border-radius:5px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;">
+              </td>
+              <td style="padding:8px;text-align:center;">
+                <button class="btn" onclick="applyGroupRates('${cat}',${i})"
+                  style="font-size:11px;padding:4px 10px;border-color:rgba(74,158,255,.4);color:var(--blue);">
+                  ✓ Apply to Group
+                </button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:10px;align-items:center;">
+      <button class="btn btn-save" onclick="applyAllGroups();saveAll();showToast('✓ All rates applied and saved')">💾 Apply All & Save</button>
+      <div style="font-size:12px;color:var(--dim);">Then click "Export qt.html" in the header to download the updated file.</div>
+    </div>`;
+
+  document.getElementById('tab-rates-body').innerHTML = html;
+}
+
+function applyGroupRates(cat, idx) {
+  const lr36 = parseFloat(document.getElementById('rr-lr36-'+idx).value) || null;
+  const lr60 = parseFloat(document.getElementById('rr-lr60-'+idx).value) || null;
+  const fr60 = parseFloat(document.getElementById('rr-fr60-'+idx).value) || null;
+  const fr84 = parseFloat(document.getElementById('rr-fr84-'+idx).value) || null;
+  const fr96 = parseFloat(document.getElementById('rr-fr96-'+idx).value) || 6.69;
+  models.filter(m => m.cat === cat).forEach(m => {
+    if (lr36 !== null) m.lr36 = lr36;
+    if (lr60 !== null) m.lr60 = lr60;
+    if (fr60 !== null) m.fr60 = fr60;
+    if (fr84 !== null) m.fr84 = fr84;
+    m.fr96 = fr96;
+  });
+  showToast(`✓ Rates applied to all ${cat} trims`);
+}
+
+function applyAllGroups() {
+  const cats = [...new Set(models.map(m => m.cat))];
+  cats.forEach((cat, i) => applyGroupRates(cat, i));
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -615,6 +726,8 @@ function modelCard(m) {
           <input class="rate" type="number" step="0.01" data-id="${m.id}" data-field="fr60" value="${n(m.fr60)}" placeholder="null = STD"></div>
         <div class="field-group"><label>84 Month Finance Rate %</label>
           <input class="rate" type="number" step="0.01" data-id="${m.id}" data-field="fr84" value="${n(m.fr84)}" placeholder="null = STD"></div>
+        <div class="field-group"><label>96 Month Finance Rate %</label>
+          <input class="rate" type="number" step="0.01" data-id="${m.id}" data-field="fr96" value="${n(m.fr96??6.69)}" placeholder="6.69 = STD"></div>
       </div>
     </div>
   </div>`;
@@ -719,7 +832,8 @@ function exportFiles() {
     const lr60 = m.lr60 != null ? m.lr60 : 'null';
     const fr60 = m.fr60 != null ? m.fr60 : 'null';
     const fr84 = m.fr84 != null ? m.fr84 : 'null';
-    return `{id:'${m.id}', cat:'${m.cat}', name:'${m.name}', trim:'${m.trim}',\n msrp:${m.msrp||0}, price:${m.price||0}, otd:${m.otd||0}, engine:'${m.engine||''}', drive:'${m.drive||'FWD'}',\n lr:{36:${lr36},60:${lr60}}, rv:{36:${rv36},60:${rv60}}, fr:{60:${fr60},84:${fr84}}}`;
+    const fr96 = m.fr96 != null ? m.fr96 : 6.69;
+    return `{id:'${m.id}', cat:'${m.cat}', name:'${m.name}', trim:'${m.trim}',\n msrp:${m.msrp||0}, price:${m.price||0}, otd:${m.otd||0}, engine:'${m.engine||''}', drive:'${m.drive||'FWD'}',\n lr:{36:${lr36},60:${lr60}}, rv:{36:${rv36},60:${rv60}}, fr:{60:${fr60},84:${fr84},96:${fr96}}}`;
   }).join(',\n\n');
 
   const newMBlock = `const M = [\n// ══════════════════════════\n//  ${meta.period || yr}\n//  Updated: ${new Date().toLocaleDateString('en-CA')}\n// ══════════════════════════\n${mArray}\n]`;
