@@ -934,16 +934,13 @@ function render() {
 
     <!-- PRICE TABLE -->
     <div class="price-table" style="flex-wrap:wrap;gap:0;padding:0;">
-      <!-- MSRP editable -->
+      <!-- MSRP read-only -->
       <div class="pt-item" style="flex-direction:column;gap:3px;padding:10px 14px;">
         <div class="pt-lbl">MSRP</div>
-        <input type="number" min="0" step="100" value="${getEffMsrp(m)}"
-          style="width:115px;background:var(--s3);border:1px solid var(--border2);color:var(--dim);padding:5px 7px;border-radius:5px;font-size:14px;font-weight:600;font-family:inherit;text-align:right;"
-          onkeydown="if(event.key==='Enter'){msrpOv[cur.id]=parseFloat(this.value)||m.msrp;delete priceOv[cur.id];render();this.blur();}">
-        ${msrpOv[m.id]!=null?`<span style="font-size:10px;color:var(--yellow)">edited <button onclick="delete msrpOv[cur.id];delete priceOv[cur.id];render()" style="color:var(--dim);background:none;border:none;cursor:pointer;font-size:10px;font-family:inherit;">✕</button></span>`:`<span style="font-size:10px;color:var(--muted)">press Enter</span>`}
+        <div style="font-size:14px;font-weight:600;color:var(--dim);padding:5px 0;">${ca$(getEffMsrp(m))}</div>
       </div>
       <div class="pt-sep"></div>
-      <!-- FEES editable -->
+      <!-- FEES read-only -->
       <div class="pt-item" style="flex-direction:column;gap:3px;padding:10px 14px;">
         <div class="pt-lbl">
           <span class="tip-wrap">+ Fees
@@ -959,10 +956,7 @@ function render() {
             </span>
           </span>
         </div>
-        <input type="number" min="0" step="50" value="${getEffFees(m).total}"
-          style="width:115px;background:var(--s3);border:1px solid var(--border2);color:var(--dim);padding:5px 7px;border-radius:5px;font-size:14px;font-weight:600;font-family:inherit;text-align:right;"
-          onkeydown="if(event.key==='Enter'){feesOv[cur.id]=parseFloat(this.value)||fees.total;delete priceOv[cur.id];render();this.blur();}">
-        ${feesOv[m.id]!=null?`<span style="font-size:10px;color:var(--yellow)">edited <button onclick="delete feesOv[cur.id];delete priceOv[cur.id];render()" style="color:var(--dim);background:none;border:none;cursor:pointer;font-size:10px;font-family:inherit;">✕</button></span>`:`<span style="font-size:10px;color:var(--muted)">press Enter</span>`}
+        <div style="font-size:14px;font-weight:600;color:var(--dim);padding:5px 0;">${ca$(getEffFees(m).total)}</div>
       </div>
       <div class="pt-sep"></div>
       <div class="pt-item" style="flex-direction:column;align-items:flex-start;gap:4px">
@@ -979,16 +973,8 @@ function render() {
       </div>
       <div class="pt-sep"></div>
       <div class="pt-item" style="flex-direction:column;align-items:flex-start;gap:4px">
-        <div class="pt-lbl">Selling Price (Before Tax) <span style="font-size:10px;color:var(--muted)">(edit)</span></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="number" min="0" step="100"
-            value="${r.price}"
-            style="width:130px;background:var(--s3);border:1px solid rgba(240,240,240,.2);color:var(--text);padding:4px 8px;border-radius:5px;font-size:16px;font-weight:700;font-family:inherit;text-align:right;"
-            onkeydown="if(event.key==='Enter'){priceOv[cur.id]=parseFloat(this.value)||r.price;render();this.blur();}"
-            title="Press Enter to apply">
-          
-          ${priceOv[m.id]!=null?`<button onclick="delete priceOv[cur.id];render()" style="font-size:10px;background:none;border:1px solid var(--border);color:var(--dim);padding:2px 7px;border-radius:4px;cursor:pointer;font-family:inherit">Reset</button>`:''}
-        </div>
+        <div class="pt-lbl">Selling Price (Before Tax)</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);padding:4px 0;">${ca$(r.price)}</div>
       </div>
       ${downPayment > 0 ? `
       <div class="pt-sep"></div>
