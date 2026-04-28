@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23E40521'/><text x='50' y='76' font-size='72' text-anchor='middle' fill='white' font-weight='900' font-family='Arial,sans-serif'>$</text></svg>">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <script>if(typeof sessionStorage!=="undefined"&&sessionStorage.getItem("mh_qt_auth")!=="1"){window.location.replace("quote.html");}</script>
 <title>CleanQuotes</title>
@@ -1159,26 +1160,32 @@ function render() {
       </button>
       ${moreOptionsOpen ? `
       <div style="margin-top:12px;background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-        <div style="background:var(--s3);padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);">All Payment Options — 2026 ${m.name} ${m.trim} · ${kmAllowance.toLocaleString()} km/yr</div>
+        <div style="background:var(--s3);padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+          <span>All Payment Options — 2026 ${m.name} ${m.trim} · ${kmAllowance.toLocaleString()} km/yr</span>
+          ${(optBWval||optLeaseGuard||optGAP||warrantySelected) ? `<span style="font-size:10px;color:var(--yellow);font-weight:600;letter-spacing:0;text-transform:none;">⚡ Includes active add-ons</span>` : ''}
+        </div>
         <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
 
-          <!-- LEFT: ALL LEASE TERMS (24/30/36/42/48/54/60) -->
           <!-- LEFT: ALL LEASE TERMS (vertical) -->
           <div>
-            <div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Lease Options</div>
+            <div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;">Lease Options</div>
+            ${(optBWval||optLeaseGuard) ? `<div style="font-size:10px;color:var(--dim);margin-bottom:8px;">${[optBWval?'Options':null,optLeaseGuard?'LeaseGuard':null].filter(Boolean).join(' + ')} included</div>` : '<div style="margin-bottom:8px;"></div>'}
             <div style="display:flex;flex-direction:column;gap:5px;">
-              ${[[24,r.lr36],[30,r.lr36],[36,r.lr36],[42,r.lr36],[48,r.lr60],[54,r.lr60],[60,r.lr60]].map(([mo,rt]) => {
+              ${[24,30,36,42,48,54,60].map(mo => {
+                const rt = lrForTerm(r, mo);
                 if (!rt) return '<div style="background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;opacity:.35;">'
                   + '<span style="font-size:12px;color:var(--dim);">' + mo + ' mo</span>'
                   + '<span style="font-size:12px;color:var(--muted)">STD</span></div>';
-                const resObj = getRes(m, mo <= 36 ? 36 : 60);
-                const moP = lmo(cap, resObj.val, mo, rt);
-                const bwP = mo2bw(moP);
+                const resObj = getRes(m, mo);
+                const moBase = lmo(cap, resObj.val, mo, rt);
+                const lgAdd  = optLeaseGuard ? OPT_LEASEGUARD_PRO : 0;
+                const bwTotal = mo2bw(moBase) + (optBWval||0) + lgAdd;
+                const moTotal = moBase + bw2mo(optBWval||0) + bw2mo(lgAdd);
                 return '<div style="background:var(--s1);border:1px solid var(--blue-bdr);border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;">'
                   + '<div><span style="font-size:12px;color:var(--blue);font-weight:700;">' + mo + ' mo</span>'
                   + '<span style="font-size:10px;color:var(--muted);margin-left:6px;">' + rt + '% · Res ' + ca$(resObj.val) + '</span></div>'
-                  + '<div style="text-align:right;"><div style="font-size:15px;font-weight:800;">' + ca$c(bwP) + '<span style="font-size:10px;font-weight:400;color:var(--dim)">/2wk</span></div>'
-                  + '<div style="font-size:11px;color:var(--dim);">' + ca$c(moP) + '/mo</div></div>'
+                  + '<div style="text-align:right;"><div style="font-size:15px;font-weight:800;">' + ca$c(bwTotal) + '<span style="font-size:10px;font-weight:400;color:var(--dim)">/2wk</span></div>'
+                  + '<div style="font-size:11px;color:var(--dim);">' + ca$c(moTotal) + '/mo</div></div>'
                   + '</div>';
               }).join('')}
             </div>
@@ -1186,14 +1193,18 @@ function render() {
 
           <!-- RIGHT: ALL FINANCE TERMS (vertical) -->
           <div>
-            <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Finance Options</div>
+            <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;">Finance Options</div>
+            ${(optGAP||warrantySelected) ? `<div style="font-size:10px;color:var(--dim);margin-bottom:8px;">${[optGAP?'GAP':null,warrantySelected?'Warranty':null].filter(Boolean).join(' + ')} included</div>` : '<div style="margin-bottom:8px;"></div>'}
             <div style="display:flex;flex-direction:column;gap:5px;">
-              ${[[24,r.fr60],[36,r.fr60],[48,r.fr60],[60,r.fr60],[72,r.fr84],[84,r.fr84],[96,r.fr96]].map(([mo,rt]) => {
+              ${[24,36,48,60,72,84,96].map(mo => {
+                const rt = frForTerm(r, mo);
                 if (!rt) return '<div style="background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;opacity:.35;">'
                   + '<span style="font-size:12px;color:var(--dim);">' + mo + ' mo</span>'
                   + '<span style="font-size:12px;color:var(--muted)">STD</span></div>';
-                const bwP = fbw(cap, mo, rt);
-                const moP = fmo(cap, mo, rt);
+                const wCost2 = warrantySelected ? warrantySelected.cost : 0;
+                const effCap = cap + (optGAP ? gapAmt : 0) + wCost2;
+                const bwP = fbw(effCap, mo, rt);
+                const moP = fmo(effCap, mo, rt);
                 return '<div style="background:var(--s1);border:1px solid var(--green-bdr);border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;">'
                   + '<div><span style="font-size:12px;color:var(--green);font-weight:700;">' + mo + ' mo</span>'
                   + '<span style="font-size:10px;color:var(--muted);margin-left:6px;">' + rt + '% APR</span></div>'
