@@ -1066,7 +1066,7 @@ function render() {
         <div class="pt-lbl">${downPayment>0?'OTD after Down Pmt':'OTD (incl 13% HST)'}</div>
         <div class="pt-val dim">${ca$(dynamicOTD)}</div>
         ${downPayment>0?`<div style="font-size:10px;color:var(--muted);margin-top:2px">Gross OTD ${ca$(grossOTD)}</div>`:''}
-        ${feesUpfront?`<div style="font-size:10px;color:var(--yellow);margin-top:2px">${ca$(fees.total)} fees paid at delivery</div>`:''}
+        ${feesUpfront?`<div style="font-size:10px;color:var(--yellow);margin-top:2px">${ca$(Math.round(fees.total*1.13))} fees (incl. tax) at delivery${downPayment>0?' + '+ca$(dpTaxIn)+' down = <b>'+ca$(Math.round(fees.total*1.13)+dpTaxIn)+' total</b>':''}</div>`:''}
       </div>
     </div>
 
@@ -1103,7 +1103,7 @@ function render() {
           style="width:15px;height:15px;accent-color:var(--yellow);cursor:pointer;">
         <label for="fees-upfront" style="cursor:pointer;">
           <span style="font-size:13px;font-weight:600;color:${feesUpfront?'var(--yellow)':'var(--dim)'}">Fees Upfront</span>
-          <span style="font-size:11px;color:var(--dim);margin-left:5px">${feesUpfront?`${ca$(fees.total)} paid at delivery`:'Roll fees into payment'}</span>
+          <span style="font-size:11px;color:var(--dim);margin-left:5px">${feesUpfront?`${ca$(Math.round(fees.total*1.13))} (incl. tax) paid at delivery`:'Roll fees into payment'}</span>
         </label>
       </div>
     </div>
@@ -1893,6 +1893,7 @@ function printQuote(autoSave) {
       <div class="price-col highlight">
         <div class="pr-lbl">OTD (incl. 13% HST)</div>
         <div class="pr-val">${ca$(grossOTD)}</div>
+        ${(feesUpfront||downPayment>0)?`<div style="font-size:10px;color:#888;margin-top:3px;">${[feesUpfront?ca$(Math.round(fees.total*1.13))+' fees':null,downPayment>0?ca$(dpTaxIn)+' down':null].filter(Boolean).join(' + ')} = <b style="color:#555">${ca$(Math.round(fees.total*1.13)*(feesUpfront?1:0)+dpTaxIn)} due at delivery</b></div>`:''}
       </div>
     </div>
     <div class="veh-meta">${m.engine} · ${m.drive}${m.promo ? ` · ⚡ HFS Promo: ${m.promo.rate}% 60mo to ${m.promo.exp}` : ''}</div>
