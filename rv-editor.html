@@ -340,17 +340,35 @@ function renderKM() {
 function handleInput(el) {
   const id   = el.dataset.id;
   const type = el.dataset.type;
-  const val  = parseFloat(el.value);
   const m    = edited.find(x => x.id === id);
   const orig = original.find(x => x.id === id);
   if (!m) return;
 
-  if (isNaN(val) || val < 0 || val > 100) {
-    el.classList.add('edited');
+  let val = parseFloat(el.value);
+
+  // Empty / NaN → restore original value
+  if (el.value === '' || isNaN(val)) {
+    const term = el.dataset.term ? parseInt(el.dataset.term) : null;
+    const km   = el.dataset.km   ? parseInt(el.dataset.km)   : null;
+    const origDec = type === 'rv'
+      ? (orig?.rv[term] ?? 0)
+      : (orig?.resKm?.[km] ?? 0);
+    val = Math.round(origDec * 100);
+    el.value = val;
+    if (type === 'rv') m.rv[term] = origDec;
+    else if (type === 'km' && m.resKm) m.resKm[km] = origDec;
+    el.classList.remove('edited');
+    updateEditedCount();
     return;
   }
 
-  const dec = Math.round(val) / 100;
+  // Clamp to [0, 100]
+  if (val < 0)   val = 0;
+  if (val > 100) val = 100;
+  val = Math.round(val);
+  if (parseFloat(el.value) !== val) el.value = val;
+
+  const dec = val / 100;
 
   if (type === 'rv') {
     const term = parseInt(el.dataset.term);
