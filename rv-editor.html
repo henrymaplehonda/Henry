@@ -168,7 +168,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.4;
     <div class="info-bar">
       <strong>Base:</strong> 24,000 km/yr · Values shown as % of MSRP
       <span>|</span>
-      <strong>Pattern:</strong> 24k = base rv60 · ↓km = higher residual · ↑km = lower residual
+      <strong>Rule:</strong> 20k +2% · 16k +3% · 12k +4% · 32k −$640 · 40k −$1,280 (above base = $0.08/km)
       <div class="info-tip">
         <div class="dot"></div>
         <span>Only cars with published Honda km grids shown</span>
@@ -558,7 +558,8 @@ function serializeModelsData() {
 //  Lease & finance RATES confirmed from April 2026 Honda Programs (NAS081-26)
 //  Residuals: Official Honda Canada 2026 Residual Values sheet
 //  Residual basis: % of MSRP · KM basis: 24,000 km/yr
-//  km adjustment: ±2% of MSRP per 4,000 km/yr from 24k base
+//  km adjustment vs 24k base: 20k +2% · 16k +3% · 12k +4% (% of MSRP)
+//  Above base: residual $ drops by $0.08/km of overage (32k −$640 · 40k −$1,280)
 //  Last edited via Program Update tool: ${today}
 // ═══════════════════════════════════════════════════════════════════════
 
